@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 
-#include "include/application.hpp"
-#include "include/exceptions.hpp"
+#include <application.hpp>
+#include <exceptions.hpp>
 
 Application::Application()
 {
@@ -17,11 +17,4 @@ Application::~Application()
 	::SDL_Log("Quit SDL...");
 	::SDL_Quit();
 	::SDL_Log("OK");
-}
-
-int main()
-{
-	Application app;
-
-	return 0;
 }

@@ -4,7 +4,9 @@ project(appbase)
 set(SOURCE_FILES
 	application.cpp)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+
+target_include_directories(${PROJECT_NAME} PUBLIC include/)
 
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})

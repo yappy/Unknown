@@ -15,8 +15,16 @@ Only tested in Debian!
 ### build
 ```
 $ cd build/
-$ ./build.sh
-$ make
+$ ./cmake.sh
+$ make -C linux/Debug
+$ make -C linux/Release
+
+To clean,
+$ make -C linux/Debug clean
+$ make -C linux/Release clean
+
+To clean fully,
+$ rm -rf linux/
 ```
 
 ## Mac OS X
