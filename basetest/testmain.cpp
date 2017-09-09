@@ -2,7 +2,8 @@
 
 int main()
 {
-	Application app;
+	appbase::Application app("Test App");
+	app.Run();
 
 	return 0;
 }
