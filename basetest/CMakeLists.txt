@@ -9,6 +9,10 @@ set(RESOURCE_DIRS
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
+# SDL2 include
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS})
+# appbase include and lib
 target_include_directories(${PROJECT_NAME} PRIVATE appbase)
 target_link_libraries(${PROJECT_NAME} appbase)
 
