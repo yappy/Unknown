@@ -2,6 +2,9 @@
 #include <exceptions.hpp>
 #include <string>
 
+using appbase::error::SDLFileError;
+using appbase::error::ThrowLastSDLError;
+
 namespace appbase {
 namespace file {
 
@@ -71,7 +74,11 @@ Bytes ReadAllBytes(const FilePointer &fp, size_t maxsize)
 
 std::string ReadAllString(const FilePointer &fp, size_t maxsize)
 {
-	return ReadAllInternal<std::string>(fp, maxsize);
+	auto result = ReadAllInternal<std::string>(fp, maxsize);
+	if (result.find('\0') != std::string::npos) {
+		throw SDLFileError("NUL detected in text file");
+	}
+	return result;
 }
 
 

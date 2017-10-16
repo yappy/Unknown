@@ -1,6 +1,9 @@
 #include <application.hpp>
 #include <exceptions.hpp>
 
+using appbase::error::SDLError;
+using appbase::error::ThrowLastSDLError;
+
 namespace appbase {
 
 void SdlDeleter::operator()(void *p) noexcept

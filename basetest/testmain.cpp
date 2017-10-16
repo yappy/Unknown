@@ -12,7 +12,7 @@ int main()
 		appbase::Application app("Test App");
 		app.Run();
 	}
-	catch (appbase::SDLError &error) {
+	catch (appbase::error::SDLError &error) {
 		SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION,
 			"%s", error.what());
 		return 1;
