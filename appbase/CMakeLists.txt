@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.7)
 project(appbase)
 
 set(SOURCE_FILES
-	application.cpp)
+	application.cpp
+	file.cpp)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 

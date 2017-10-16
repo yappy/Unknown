@@ -4,24 +4,18 @@
 
 int main()
 {
-	auto base = std::string(::SDL_GetBasePath());
-	auto textpath = base + "res/test.txt";
-	SDL_Log("path: %s", textpath.c_str());
+	try {
+		auto fp = appbase::file::OpenAtBaseR("res/test.txt");
+		std::string strdata = appbase::file::ReadAllString(fp);
+		SDL_Log(strdata.c_str());
 
-	SDL_RWops *ops = SDL_RWFromFile(textpath.c_str(), "rb");
-	if (ops != nullptr) {
-		// 0-filled (default construct)
-		std::array<uint8_t, 256> buf;
-		SDL_RWread(ops, buf.data(), 1, buf.size() - 1);
-		SDL_Log("%s", buf.data());
-		SDL_RWclose(ops);
+		appbase::Application app("Test App");
+		app.Run();
 	}
-	else {
-		SDL_Log("File not found");
+	catch (appbase::SDLError &error) {
+		SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION,
+			"%s", error.what());
+		return 1;
 	}
-
-	appbase::Application app("Test App");
-	app.Run();
-
 	return 0;
 }

@@ -3,6 +3,9 @@
 #include <SDL2/SDL.h>
 #include <memory>
 
+#include "exceptions.hpp"
+#include "file.hpp"
+
 namespace appbase {
 
 const int DefalutSizeW = 800;
