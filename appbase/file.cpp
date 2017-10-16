@@ -1,6 +1,5 @@
 #include <file.hpp>
 #include <exceptions.hpp>
-#include <string>
 
 using appbase::error::SDLFileError;
 using appbase::error::ThrowLastSDLError;
@@ -80,6 +79,31 @@ std::string ReadAllString(const FilePointer &fp, size_t maxsize)
 	}
 	return result;
 }
+
+Lines ReadAllLines(const FilePointer &fp, size_t maxsize)
+{
+	Lines result;
+	std::string org = ReadAllString(fp, maxsize);
+
+	decltype(org.find('\n', 0)) start = 0;
+	while (start < org.size()) {
+		decltype(start) end = 0;
+		auto lfpos = org.find('\n', start);
+		if (lfpos == std::string::npos) {
+			end = org.size();
+			if (start == end) {
+				break;
+			}
+		}
+		else {
+			end = lfpos;
+		}
+		result.emplace_back(org, start, end - start);
+		start = end + 1;
+	}
+	return result;
+}
+
 
 
 }
