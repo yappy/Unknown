@@ -27,6 +27,14 @@ void RendererDeleter::operator()(SDL_Renderer *p) noexcept
 Application::Application(const ApplicationSettings &settings) :
 	m_settings(settings)
 {
+	SDL_version compiled, linked;
+	SDL_VERSION(&compiled);
+	SDL_GetVersion(&linked);
+	::SDL_Log("SDL compiled version: %d.%d.%d",
+		compiled.major, compiled.minor, compiled.patch);
+	::SDL_Log("SDL linked version  : %d.%d.%d",
+		linked.major, linked.minor, linked.patch);
+
 	::SDL_Log("Initialize SDL...");
 	if (::SDL_Init(SDL_INIT_EVERYTHING)) {
 		ThrowLastSDLError<SDLError>();
