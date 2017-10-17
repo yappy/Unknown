@@ -32,7 +32,7 @@ int main()
 		appbase::ApplicationSettings settings;
 		settings.title = "Test App";
 		auto app = std::make_unique<MyApp>(settings);
-		//app->Run();
+		app->Run();
 	}
 	catch (appbase::error::SDLError &error) {
 		SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION,
