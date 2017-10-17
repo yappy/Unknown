@@ -24,7 +24,8 @@ void RendererDeleter::operator()(SDL_Renderer *p) noexcept
 	::SDL_DestroyRenderer(p);
 }
 
-Application::Application(const char *title, int w, int h)
+Application::Application(const ApplicationSettings &settings) :
+	m_settings(settings)
 {
 	::SDL_Log("Initialize SDL...");
 	if (::SDL_Init(SDL_INIT_EVERYTHING)) {
@@ -34,9 +35,9 @@ Application::Application(const char *title, int w, int h)
 	::SDL_Log("Initialize SDL OK");
 
 	::SDL_Log("Create window...");
-	SDL_Window *pWindow = ::SDL_CreateWindow(title,
+	SDL_Window *pWindow = ::SDL_CreateWindow(settings.title,
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		w, h,
+		settings.w, settings.h,
 		0);
 	if (pWindow == nullptr) {
 		ThrowLastSDLError<SDLError>();
@@ -45,21 +46,29 @@ Application::Application(const char *title, int w, int h)
 	::SDL_Log("Create window OK");
 }
 
-Application::~Application()
-{}
-
 void Application::Run()
 {
+	// count/sec
+	Uint64 freq = SDL_GetPerformanceFrequency();
+	// count/frame = (count/sec) / (frame/sec)
+	Uint64 target = freq / m_settings.fps;
+
 	while (1) {
+		Uint64 start = SDL_GetPerformanceCounter();
+
 		SDL_Event event;
 		while (::SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) {
 				return;
 			}
 		}
-		// update();
-		// render();
-		SDL_Delay(16);
+
+		Update();
+		Render();
+
+		while (SDL_GetPerformanceCounter() - start < target) {
+			SDL_Delay(0);
+		}
 	}
 }
 

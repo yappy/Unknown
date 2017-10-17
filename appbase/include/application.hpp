@@ -8,10 +8,6 @@
 
 namespace appbase {
 
-const int DefalutSizeW = 800;
-const int DefaultSizeH = 480;
-
-
 struct SdlDeleter {
 	void operator()(void *p) noexcept;
 };
@@ -27,14 +23,33 @@ using SdlWindowPtr = std::unique_ptr<SDL_Window, WindowDeleter>;
 using SdlRendererPtr = std::unique_ptr<SDL_Renderer, RendererDeleter>;
 
 
+const int DefalutSizeW = 800;
+const int DefaultSizeH = 480;
+const int DefaultFps = 60;
+
+struct ApplicationSettings {
+	const char *title = "Window title";
+	int w = DefalutSizeW;
+	int h = DefaultSizeH;
+	int fps = DefaultFps;
+};
+
 class Application {
 public:
-	explicit Application(const char *title,
-		int w = DefalutSizeW, int h = DefaultSizeH);
-	virtual ~Application();
+	Application(const Application &) = delete;
+	Application & operator=(const Application &) = delete;
+
+	explicit Application(const ApplicationSettings &settings);
+	virtual ~Application() = default;
+
+	virtual void Update() = 0;
+	virtual void Render() = 0;
 
 	void Run();
+
 private:
+	ApplicationSettings m_settings;
+
 	SdlPtr m_sdl;
 	SdlWindowPtr m_window;
 	SdlRendererPtr m_renderer;

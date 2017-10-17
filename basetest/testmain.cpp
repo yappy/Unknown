@@ -3,6 +3,17 @@
 #include <string>
 #include <vector>
 
+class MyApp : public appbase::Application {
+public:
+	// inheriting constructor
+	using Application::Application;
+
+	void Update() override
+	{}
+	void Render() override
+	{}
+};
+
 int main()
 {
 	try {
@@ -18,8 +29,10 @@ int main()
 			}
 		}
 
-		appbase::Application app("Test App");
-		app.Run();
+		appbase::ApplicationSettings settings;
+		settings.title = "Test App";
+		auto app = std::make_unique<MyApp>(settings);
+		//app->Run();
 	}
 	catch (appbase::error::SDLError &error) {
 		SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION,
