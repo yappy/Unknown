@@ -34,8 +34,11 @@ Application::Application(const ApplicationSettings &settings) :
 	m_sdl.reset(this);
 	::SDL_Log("Initialize SDL OK");
 
-	::SDL_Log("Disable screen saver...");
-	::SDL_DisableScreenSaver();
+	// Default is disabled if SDL 2.0.2 or later
+	if (::SDL_IsScreenSaverEnabled()) {
+		::SDL_Log("Disable screen saver...");
+		::SDL_DisableScreenSaver();
+	}
 
 	::SDL_Log("Create window...");
 	SDL_Window *pWindow = ::SDL_CreateWindow(settings.title,
