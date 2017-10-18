@@ -26,6 +26,7 @@ FilePointer OpenW(const std::string &path);
 Bytes ReadAllBytes(const FilePointer &fp, size_t maxsize = DefaultMaxSize);
 std::string ReadAllString(const FilePointer &fp, size_t maxsize = DefaultMaxSize);
 Lines ReadAllLines(const FilePointer &fp, size_t maxsize = DefaultMaxSize);
+void WriteAllBytes(const FilePointer &fp, const void *buf, size_t size);
 
 // would like to use std::variant...
 struct ConfigElement final {
@@ -52,10 +53,12 @@ public:
 	ConfigFile(std::initializer_list<decltype(m_data)::value_type> defaultList) :
 		m_data(defaultList)
 	{}
+	ConfigFile(const ConfigFile &) = default;
+	ConfigFile & operator=(const ConfigFile &) = default;
 	~ConfigFile() = default;
 
-	void Load();
-	void Save();
+	void Load(const std::string &filepath);
+	void Save(const std::string &filepath);
 };
 
 }

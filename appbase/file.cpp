@@ -113,7 +113,67 @@ Lines ReadAllLines(const FilePointer &fp, size_t maxsize)
 	return result;
 }
 
+void WriteAllBytes(const FilePointer &fp, const void *buf, size_t size)
+{
+	size_t ret = SDL_RWwrite(fp.get(), buf, 1, size);
+	if (ret != size) {
+		ThrowLastSDLError<SDLFileError>();
+	}
+}
 
+void ConfigFile::Load(const std::string &filepath)
+{
+	try {
+		auto fp = OpenR(filepath);
+		Lines lines = ReadAllLines(fp);
+		int lineNo = 0;
+		for (std::string line : lines) {
+			lineNo++;
+			if (line.empty() || line[0] == '#') {
+				continue;
+			}
+			// TODO parse
+		}
+		// close
+	}
+	catch (SDLFileError &) {
+		// read error: log and ignore
+		SDL_Log("Load config file failed: %s", filepath.c_str());
+	}
+	// write fixed data
+	try {
+		Save(filepath);
+	}
+	catch (SDLFileError &) {
+		// write error: log and rethrow
+		SDL_Log("Recreate config file failed: %s", filepath.c_str());
+		throw;
+	}
+}
+
+void ConfigFile::Save(const std::string &filepath)
+{
+	auto fp = OpenW(filepath);
+	for (const auto &kv : m_data) {
+		std::string line = kv.first;
+		line += '=';
+		switch (kv.second.type) {
+		case ConfigElement::Type::String:
+			line += kv.second.stringValue;
+			break;
+		case ConfigElement::Type::Bool:
+			line += kv.second.boolValue ? "true" : "false";
+			break;
+		case ConfigElement::Type::Int:
+			line += std::to_string(kv.second.intValue);
+			break;
+		default:
+			SDL_assert(0);
+		}
+		WriteAllBytes(fp, line.c_str(), line.size());
+	}
+	// close
+}
 
 }
 }
