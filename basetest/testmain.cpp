@@ -18,15 +18,26 @@ int main()
 {
 	try {
 		{
-			auto fp = appbase::file::OpenAtBaseR("res/test.txt");
+			using namespace appbase::file;
+			auto fp = OpenR(FromBasePath("res/test.txt"));
 			std::string strdata = appbase::file::ReadAllString(fp);
 			SDL_Log(strdata.c_str());
 		}
 		{
-			auto fp = appbase::file::OpenAtBaseR("res/multiline.txt");
+			using namespace appbase::file;
+			auto fp = OpenR(FromBasePath("res/multiline.txt"));
 			for (const auto &line : appbase::file::ReadAllLines(fp)) {
 				SDL_Log(line.c_str());
 			}
+		}
+		{
+			appbase::file::ConfigFile config({
+				{"system.run", true},
+				{"system.title", "Test App"},
+				{"graph.clear.r", 0},
+				{"graph.clear.g", 0},
+				{"graph.clear.b", 0},
+			});
 		}
 
 		appbase::ApplicationSettings settings;

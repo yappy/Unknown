@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include "safeptr.hpp"
 
 namespace appbase {
@@ -16,10 +17,46 @@ using Lines = std::vector<std::string>;
 const size_t DefaultMaxSize = 256 * 1024 * 1024;
 
 const std::string &GetBasePath();
-FilePointer OpenAtBaseR(const char *filepath);
+inline std::string FromBasePath(const char *path)
+{
+	return GetBasePath() + path;
+}
+FilePointer OpenR(const std::string &path);
+FilePointer OpenW(const std::string &path);
 Bytes ReadAllBytes(const FilePointer &fp, size_t maxsize = DefaultMaxSize);
 std::string ReadAllString(const FilePointer &fp, size_t maxsize = DefaultMaxSize);
 Lines ReadAllLines(const FilePointer &fp, size_t maxsize = DefaultMaxSize);
+
+// would like to use std::variant...
+struct ConfigElement final {
+	enum class Type {
+		String, Bool, Int,
+	};
+
+	Type type;
+	std::string stringValue;
+	bool boolValue;
+	int intValue;
+
+	// allow implicit construct
+	ConfigElement(const char *s) : type(Type::String), stringValue(s) {}
+	ConfigElement(bool b) : type(Type::Bool), boolValue(b) {}
+	ConfigElement(int i) : type(Type::Int), intValue(i) {}
+	~ConfigElement() = default;
+};
+
+class ConfigFile final {
+private:
+	std::unordered_map<std::string, ConfigElement> m_data;
+public:
+	ConfigFile(std::initializer_list<decltype(m_data)::value_type> defaultList) :
+		m_data(defaultList)
+	{}
+	~ConfigFile() = default;
+
+	void Load();
+	void Save();
+};
 
 }
 }

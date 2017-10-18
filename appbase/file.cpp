@@ -54,15 +54,25 @@ const std::string &GetBasePath()
 	return base_path;
 }
 
-FilePointer OpenAtBaseR(const char *filepath)
-{
-	std::string base = GetBasePath();
-	auto fullpath = base + filepath;
-	auto result = FilePointer(SDL_RWFromFile(fullpath.c_str(), "rb"));
-	if (result == nullptr) {
-		ThrowLastSDLError<SDLFileError>();
+namespace {
+	FilePointer OpenInternal(const std::string &path, const char *mode)
+	{
+		auto result = FilePointer(SDL_RWFromFile(path.c_str(), mode));
+		if (result == nullptr) {
+			ThrowLastSDLError<SDLFileError>();
+		}
+		return result;
 	}
-	return result;
+}
+
+FilePointer OpenR(const std::string &path)
+{
+	return OpenInternal(path, "rb");
+}
+
+FilePointer OpenW(const std::string &path)
+{
+	return OpenInternal(path, "wb");
 }
 
 Bytes ReadAllBytes(const FilePointer &fp, size_t maxsize)
