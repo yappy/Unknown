@@ -31,7 +31,11 @@ int main()
 
 		appbase::ApplicationSettings settings;
 		settings.title = "Test App";
-		auto app = std::make_unique<MyApp>(settings);
+
+		appbase::graph::GraphicsSettings graphSettings;
+		graphSettings.clear.b = 0x80;
+
+		auto app = std::make_unique<MyApp>(settings, graphSettings);
 		app->Run();
 	}
 	catch (appbase::error::SDLError &error) {

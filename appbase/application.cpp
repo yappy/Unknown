@@ -1,30 +1,12 @@
 #include <application.hpp>
-#include <exceptions.hpp>
+
+namespace appbase {
 
 using appbase::error::SDLError;
 using appbase::error::ThrowLastSDLError;
 
-namespace appbase {
-
-void SdlDeleter::operator()(void *p) noexcept
-{
-	::SDL_Log("Quit SDL");
-	::SDL_Quit();
-}
-
-void WindowDeleter::operator()(SDL_Window *p) noexcept
-{
-	::SDL_Log("Destroy window");
-	::SDL_DestroyWindow(p);
-}
-
-void RendererDeleter::operator()(SDL_Renderer *p) noexcept
-{
-	::SDL_Log("Destroy Renderer");
-	::SDL_DestroyRenderer(p);
-}
-
-Application::Application(const ApplicationSettings &settings) :
+Application::Application(const ApplicationSettings &settings,
+	const graph::GraphicsSettings &graphSettings) :
 	m_settings(settings)
 {
 	SDL_version compiled, linked;
@@ -49,15 +31,17 @@ Application::Application(const ApplicationSettings &settings) :
 	}
 
 	::SDL_Log("Create window...");
-	SDL_Window *pWindow = ::SDL_CreateWindow(settings.title,
+	m_window.reset(::SDL_CreateWindow(settings.title,
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		settings.w, settings.h,
-		0);
-	if (pWindow == nullptr) {
+		0));
+	if (m_window == nullptr) {
 		ThrowLastSDLError<SDLError>();
 	}
-	m_window.reset(pWindow);
 	::SDL_Log("Create window OK");
+
+	m_graph = std::make_unique<graph::GraphicsManager>(
+		graphSettings, m_window);
 }
 
 void Application::Run()
@@ -77,8 +61,12 @@ void Application::Run()
 			}
 		}
 
+		// frame update
 		Update();
+		// render
+		m_graph->Clear();
 		Render();
+		m_graph->Present();
 
 		while (SDL_GetPerformanceCounter() - start < target) {
 			SDL_Delay(0);

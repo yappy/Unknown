@@ -4,16 +4,10 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "safeptr.hpp"
 
 namespace appbase {
 namespace file {
-
-inline void RWopsDeleter(SDL_RWops *p) noexcept
-{
-	SDL_RWclose(p);
-}
-
-using FilePointer = std::unique_ptr<SDL_RWops, decltype(&RWopsDeleter)>;
 
 using Bytes = std::vector<uint8_t>;
 using Lines = std::vector<std::string>;

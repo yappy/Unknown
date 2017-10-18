@@ -2,26 +2,12 @@
 
 #include <SDL.h>
 #include <memory>
-
+#include "safeptr.hpp"
 #include "exceptions.hpp"
 #include "file.hpp"
+#include "graphics.hpp"
 
 namespace appbase {
-
-struct SdlDeleter {
-	void operator()(void *p) noexcept;
-};
-struct WindowDeleter {
-	void operator()(SDL_Window *p) noexcept;
-};
-struct RendererDeleter {
-	void operator()(SDL_Renderer *p) noexcept;
-};
-
-using SdlPtr = std::unique_ptr<void, SdlDeleter>;
-using SdlWindowPtr = std::unique_ptr<SDL_Window, WindowDeleter>;
-using SdlRendererPtr = std::unique_ptr<SDL_Renderer, RendererDeleter>;
-
 
 const int DefalutSizeW = 800;
 const int DefaultSizeH = 480;
@@ -39,7 +25,8 @@ public:
 	Application(const Application &) = delete;
 	Application & operator=(const Application &) = delete;
 
-	explicit Application(const ApplicationSettings &settings);
+	Application(const ApplicationSettings &settings,
+		const graph::GraphicsSettings &graphSettings);
 	virtual ~Application() = default;
 
 	virtual void Update() = 0;
@@ -50,9 +37,10 @@ public:
 private:
 	ApplicationSettings m_settings;
 
+	// destruct in reversed order
 	SdlPtr m_sdl;
 	SdlWindowPtr m_window;
-	SdlRendererPtr m_renderer;
+	std::unique_ptr<graph::GraphicsManager> m_graph;
 };
 
 }

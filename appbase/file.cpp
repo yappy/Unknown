@@ -58,8 +58,7 @@ FilePointer OpenAtBaseR(const char *filepath)
 {
 	std::string base = GetBasePath();
 	auto fullpath = base + filepath;
-	auto result = FilePointer(
-		SDL_RWFromFile(fullpath.c_str(), "rb"), RWopsDeleter);
+	auto result = FilePointer(SDL_RWFromFile(fullpath.c_str(), "rb"));
 	if (result == nullptr) {
 		ThrowLastSDLError<SDLFileError>();
 	}
