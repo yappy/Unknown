@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <map>
 #include "safeptr.hpp"
 
 namespace appbase {
@@ -48,7 +48,7 @@ struct ConfigElement final {
 
 class ConfigFile final {
 private:
-	std::unordered_map<std::string, ConfigElement> m_data;
+	std::map<std::string, ConfigElement> m_data;
 public:
 	ConfigFile(std::initializer_list<decltype(m_data)::value_type> defaultList) :
 		m_data(defaultList)

@@ -31,13 +31,15 @@ int main()
 			}
 		}
 		{
-			appbase::file::ConfigFile config({
+			using namespace appbase::file;
+			ConfigFile config({
 				{"system.run", true},
 				{"system.title", "Test App"},
 				{"graph.clear.r", 0},
 				{"graph.clear.g", 0},
 				{"graph.clear.b", 0},
 			});
+			config.Load(FromBasePath("config.txt"));
 		}
 
 		appbase::ApplicationSettings settings;

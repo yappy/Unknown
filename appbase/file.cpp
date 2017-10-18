@@ -1,5 +1,6 @@
 #include <file.hpp>
 #include <exceptions.hpp>
+#include <regex>
 
 using appbase::error::SDLFileError;
 using appbase::error::ThrowLastSDLError;
@@ -123,16 +124,60 @@ void WriteAllBytes(const FilePointer &fp, const void *buf, size_t size)
 
 void ConfigFile::Load(const std::string &filepath)
 {
+	SDL_Log("Load config file: %s", filepath.c_str());
 	try {
 		auto fp = OpenR(filepath);
 		Lines lines = ReadAllLines(fp);
+
+		std::regex re("([\\w\\.]+)=(.*)");
+		std::smatch m;
 		int lineNo = 0;
 		for (std::string line : lines) {
 			lineNo++;
+			// empty line cr comment: skip
 			if (line.empty() || line[0] == '#') {
 				continue;
 			}
-			// TODO parse
+			// line match
+			if (std::regex_match(line, m, re)) {
+				std::string key = m.str(1);
+				std::string value = m.str(2);
+				auto it = m_data.find(key);
+				if (it != m_data.end()) {
+					switch (it->second.type) {
+					case ConfigElement::Type::String:
+						it->second.stringValue = value;
+						break;
+					case ConfigElement::Type::Bool:
+						if (value == "true") {
+							it->second.boolValue = true;
+						}
+						else if (value == "false") {
+							it->second.boolValue = false;
+						}
+						else {
+							SDL_Log("Illegal key: %s (%d)", key.c_str(), lineNo);
+						}
+						break;
+					case ConfigElement::Type::Int:
+						try {
+							it->second.intValue = std::stoi(value);
+						}
+						catch (...) {
+							SDL_Log("Illegal int value: %s (%d)", value.c_str(), lineNo);
+						}
+						break;
+					default:
+						SDL_assert(0);
+					}
+				}
+				else {
+					SDL_Log("Illegal key: %s (%d)", key.c_str(), lineNo);
+				}
+			}
+			else {
+				SDL_Log("Illegal line %d: %s", lineNo, line.c_str());
+			}
 		}
 		// close
 	}
@@ -153,6 +198,7 @@ void ConfigFile::Load(const std::string &filepath)
 
 void ConfigFile::Save(const std::string &filepath)
 {
+	SDL_Log("Save config file: %s", filepath.c_str());
 	auto fp = OpenW(filepath);
 	for (const auto &kv : m_data) {
 		std::string line = kv.first;
@@ -170,6 +216,7 @@ void ConfigFile::Save(const std::string &filepath)
 		default:
 			SDL_assert(0);
 		}
+		line += '\n';
 		WriteAllBytes(fp, line.c_str(), line.size());
 	}
 	// close
