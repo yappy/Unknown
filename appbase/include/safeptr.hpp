@@ -24,23 +24,39 @@ struct SdlDeleter {
 };
 using SdlPtr = std::unique_ptr<void, SdlDeleter>;
 
-struct WindowDeleter {
+struct SdlWindowDeleter {
 	void operator()(SDL_Window *p) noexcept
 	{
 		::SDL_Log("Destroy window");
 		::SDL_DestroyWindow(p);
 	}
 };
-using SdlWindowPtr = std::unique_ptr<SDL_Window, WindowDeleter>;
+using SdlWindowPtr = std::unique_ptr<SDL_Window, SdlWindowDeleter>;
 
 /* SDL graphics */
-struct RendererDeleter {
+struct SdlRendererDeleter {
 	void operator()(SDL_Renderer *p) noexcept
 	{
 		::SDL_Log("Destroy Renderer");
 		::SDL_DestroyRenderer(p);
 	}
 };
-using SdlRendererPtr = std::unique_ptr<SDL_Renderer, RendererDeleter>;
+using SdlRendererPtr = std::unique_ptr<SDL_Renderer, SdlRendererDeleter>;
+
+struct SdlSurfaceDeleter {
+	void operator()(SDL_Surface *p) noexcept
+	{
+		::SDL_FreeSurface(p);
+	}
+};
+using SdlSurfacePtr = std::unique_ptr<SDL_Surface, SdlSurfaceDeleter>;
+
+struct SdlTextureDeleter {
+	void operator()(SDL_Texture *p) noexcept
+	{
+		::SDL_DestroyTexture(p);
+	}
+};
+using SdlTexturePtr = std::unique_ptr<SDL_Surface, SdlTextureDeleter>;
 
 }
