@@ -14,6 +14,11 @@ struct GraphicsSettings {
 		uint8_t b = 0;
 		uint8_t a = 0xff;
 	} clear;
+	struct {
+		bool jpg = false;
+		bool png = true;
+		bool tif = false;
+	} loadEnable;
 };
 
 class GraphicsManager final {
@@ -30,7 +35,9 @@ public:
 
 private:
 	GraphicsSettings m_settings;
+
 	SdlRendererPtr m_renderer;
+	SdlImagePtr m_sdl_image;
 };
 
 }

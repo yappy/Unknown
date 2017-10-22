@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL.h>
+#include <SDL_image.h>
 #include <memory>
 
 namespace appbase {
@@ -58,5 +59,15 @@ struct SdlTextureDeleter {
 	}
 };
 using SdlTexturePtr = std::unique_ptr<SDL_Surface, SdlTextureDeleter>;
+
+/* SDL_image */
+struct SdlImageDeleter {
+	void operator()(void *p) noexcept
+	{
+		::SDL_Log("Quit SDL_image");
+		::IMG_Quit();
+	}
+};
+using SdlImagePtr = std::unique_ptr<void, SdlImageDeleter>;
 
 }

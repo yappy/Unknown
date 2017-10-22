@@ -18,12 +18,26 @@ public:
 	using SDLError::SDLError;
 };
 
+class SDLImageError : public std::runtime_error {
+public:
+	// inheriting constructors
+	using runtime_error::runtime_error;
+};
+
 template <class T> 
 [[noreturn]] inline void ThrowLastSDLError()
 {
 	static_assert(std::is_base_of<SDLError, T>::value,
 		"T must inherit SDLError");
 	throw T(::SDL_GetError());
+}
+
+template <class T>
+[[noreturn]] inline void ThrowLastSDLImageError()
+{
+	static_assert(std::is_base_of<SDLImageError, T>::value,
+		"T must inherit SDLImageError");
+	throw T(::IMG_GetError());
 }
 
 }
