@@ -58,7 +58,7 @@ struct SdlTextureDeleter {
 		::SDL_DestroyTexture(p);
 	}
 };
-using SdlTexturePtr = std::unique_ptr<SDL_Surface, SdlTextureDeleter>;
+using SdlTexturePtr = std::unique_ptr<SDL_Texture, SdlTextureDeleter>;
 
 /* SDL_image */
 struct SdlImageDeleter {

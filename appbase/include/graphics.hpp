@@ -33,6 +33,16 @@ public:
 	void Clear();
 	void Present();
 
+	// Can be called in sub thread
+	SdlSurfacePtr LoadImage(const std::string &path);
+	// Must be called in main thread
+	SdlTexturePtr CreateTexture(const SdlSurfacePtr &surface);
+	// All in one
+	SdlTexturePtr LoadTexture(const std::string &path)
+	{
+		return CreateTexture(LoadImage(path));
+	}
+
 private:
 	GraphicsSettings m_settings;
 

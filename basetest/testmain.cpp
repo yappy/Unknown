@@ -49,6 +49,8 @@ int main()
 		graphSettings.clear.b = 0x80;
 
 		auto app = std::make_unique<MyApp>(settings, graphSettings);
+		app->Graph()->LoadTexture(
+			appbase::file::FromBasePath("res/sample_8_index.png"));
 		app->Run();
 	}
 	catch (appbase::error::SDLError &error) {

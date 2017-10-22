@@ -65,5 +65,25 @@ void GraphicsManager::Present()
 	::SDL_RenderPresent(m_renderer.get());
 }
 
+SdlSurfacePtr GraphicsManager::LoadImage(const std::string &path)
+{
+	::SDL_Log("Load image: %s", path.c_str());
+	SdlSurfacePtr surface(IMG_Load(path.c_str()));
+	if (surface == nullptr) {
+		ThrowLastSDLImageError<SDLImageError>();
+	}
+	return surface;
+}
+
+SdlTexturePtr GraphicsManager::CreateTexture(const SdlSurfacePtr &surface)
+{
+	SdlTexturePtr texture(SDL_CreateTextureFromSurface(
+		m_renderer.get(), surface.get()));
+	if (texture == nullptr) {
+		ThrowLastSDLImageError<SDLImageError>();
+	}
+	return texture;
+}
+
 }
 }

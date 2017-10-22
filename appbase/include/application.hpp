@@ -34,6 +34,11 @@ public:
 
 	void Run();
 
+	const std::unique_ptr<graph::GraphicsManager> &Graph()
+	{
+		return m_graph;
+	}
+
 private:
 	ApplicationSettings m_settings;
 
