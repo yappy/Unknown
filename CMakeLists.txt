@@ -15,4 +15,4 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 add_subdirectory(appbase)
-add_subdirectory(basetest)
+add_subdirectory(testapp)
