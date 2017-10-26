@@ -6,10 +6,16 @@
 namespace appbase {
 namespace error {
 
-class SDLError : public std::runtime_error {
+class AppBaseError : public std::runtime_error {
 public:
 	// inheriting constructors
 	using runtime_error::runtime_error;
+};
+
+class SDLError : public AppBaseError {
+public:
+	// inheriting constructors
+	using AppBaseError::AppBaseError;
 };
 
 class SDLFileError : public SDLError {
@@ -18,10 +24,10 @@ public:
 	using SDLError::SDLError;
 };
 
-class SDLImageError : public std::runtime_error {
+class SDLImageError : public AppBaseError {
 public:
 	// inheriting constructors
-	using runtime_error::runtime_error;
+	using AppBaseError::AppBaseError;
 };
 
 template <class T> 

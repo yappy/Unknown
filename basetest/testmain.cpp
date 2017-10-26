@@ -62,7 +62,7 @@ int main()
 		app->Load();
 		app->Run();
 	}
-	catch (appbase::error::SDLError &error) {
+	catch (appbase::error::AppBaseError &error) {
 		SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION,
 			"%s", error.what());
 		return 1;
