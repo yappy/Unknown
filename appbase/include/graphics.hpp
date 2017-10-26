@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL.h>
+#include <tuple>
 #include "safeptr.hpp"
 
 namespace appbase {
@@ -33,6 +34,8 @@ public:
 	void Clear();
 	void Present();
 
+	void DrawTexture(const SdlTexturePtr &tex, int x, int y);
+
 	// Can be called in sub thread
 	SdlSurfacePtr LoadImage(const std::string &path);
 	// Must be called in main thread
@@ -42,6 +45,7 @@ public:
 	{
 		return CreateTexture(LoadImage(path));
 	}
+	std::tuple<int, int> GetTextureSize(const SdlTexturePtr &tex);
 
 private:
 	GraphicsSettings m_settings;

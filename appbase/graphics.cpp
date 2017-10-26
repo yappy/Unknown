@@ -65,6 +65,18 @@ void GraphicsManager::Present()
 	::SDL_RenderPresent(m_renderer.get());
 }
 
+void GraphicsManager::DrawTexture(const SdlTexturePtr &tex,
+	int x, int y)
+{
+	auto size = GetTextureSize(tex);
+	SDL_Rect dst;
+	dst.x = x;
+	dst.y = y;
+	dst.w = std::get<0>(size);
+	dst.h = std::get<1>(size);
+	::SDL_RenderCopy(m_renderer.get(), tex.get(), nullptr, &dst);
+}
+
 SdlSurfacePtr GraphicsManager::LoadImage(const std::string &path)
 {
 	::SDL_Log("Load image: %s", path.c_str());
@@ -83,6 +95,15 @@ SdlTexturePtr GraphicsManager::CreateTexture(const SdlSurfacePtr &surface)
 		ThrowLastSDLImageError<SDLImageError>();
 	}
 	return texture;
+}
+
+std::tuple<int, int> GraphicsManager::GetTextureSize(const SdlTexturePtr &tex)
+{
+	int w, h;
+	if(::SDL_QueryTexture(tex.get(), nullptr, nullptr, &w, &h) < 0) {
+		ThrowLastSDLError<SDLError>();
+	}
+	return std::make_tuple(w, h);
 }
 
 }

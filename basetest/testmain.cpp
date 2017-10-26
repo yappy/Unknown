@@ -4,14 +4,24 @@
 #include <vector>
 
 class MyApp : public appbase::Application {
+private:
+	appbase::SdlTexturePtr m_tex;
 public:
 	// inheriting constructor
 	using Application::Application;
 
+	void Load()
+	{
+		m_tex = Graph()->LoadTexture(
+			appbase::file::FromBasePath("res/sample_8_index.png"));
+	}
+
 	void Update() override
 	{}
 	void Render() override
-	{}
+	{
+		Graph()->DrawTexture(m_tex, 0, 0);
+	}
 };
 
 int main()
@@ -49,8 +59,7 @@ int main()
 		graphSettings.clear.b = 0x80;
 
 		auto app = std::make_unique<MyApp>(settings, graphSettings);
-		app->Graph()->LoadTexture(
-			appbase::file::FromBasePath("res/sample_8_index.png"));
+		app->Load();
 		app->Run();
 	}
 	catch (appbase::error::SDLError &error) {
