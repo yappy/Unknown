@@ -12,15 +12,22 @@ public:
 
 	void Load()
 	{
-		m_tex = Graph()->LoadTexture(
+		m_tex = Graph().LoadTexture(
 			appbase::file::FromBasePath("res/sample_8_index.png"));
 	}
 
 	void Update() override
-	{}
+	{
+		const auto &keys = Input().GetKeyState();
+		for (int i = 0; i < appbase::input::InputManager::KeyCount; i++) {
+			if (keys[i]) {
+				SDL_Log("Key: %d", i);
+			}
+		}
+	}
 	void Render() override
 	{
-		Graph()->DrawTexture(m_tex, 0, 0);
+		Graph().DrawTexture(m_tex, 0, 0);
 	}
 };
 

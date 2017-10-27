@@ -42,6 +42,7 @@ Application::Application(const ApplicationSettings &settings,
 
 	m_graph = std::make_unique<graph::GraphicsManager>(
 		graphSettings, m_window);
+	m_input = std::make_unique<input::InputManager>();
 }
 
 void Application::Run()
@@ -60,6 +61,9 @@ void Application::Run()
 				return;
 			}
 		}
+
+		// process frame
+		m_input->ProcessFrame();
 
 		// frame update
 		Update();

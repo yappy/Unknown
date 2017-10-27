@@ -6,6 +6,7 @@
 #include "exceptions.hpp"
 #include "file.hpp"
 #include "graphics.hpp"
+#include "input.hpp"
 
 namespace appbase {
 
@@ -34,9 +35,13 @@ public:
 
 	void Run();
 
-	const std::unique_ptr<graph::GraphicsManager> &Graph()
+	graph::GraphicsManager &Graph()
 	{
-		return m_graph;
+		return *m_graph;
+	}
+	input::InputManager &Input()
+	{
+		return *m_input;
 	}
 
 private:
@@ -46,6 +51,7 @@ private:
 	SdlPtr m_sdl;
 	SdlWindowPtr m_window;
 	std::unique_ptr<graph::GraphicsManager> m_graph;
+	std::unique_ptr<input::InputManager> m_input;
 };
 
 }

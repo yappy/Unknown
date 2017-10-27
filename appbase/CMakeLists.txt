@@ -3,8 +3,9 @@ project(appbase)
 
 set(SOURCE_FILES
 	application.cpp
+	file.cpp
 	graphics.cpp
-	file.cpp)
+	input.cpp)
 
 # static lib target
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
