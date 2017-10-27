@@ -19,9 +19,9 @@ public:
 	void Update() override
 	{
 		const auto &keys = Input().GetKeyState();
-		for (int i = 0; i < appbase::input::InputManager::KeyCount; i++) {
+		for (int i = 0; i < appbase::input::KeyCount; i++) {
 			if (keys[i]) {
-				SDL_Log("Key: %d", i);
+				SDL_Log("Key: %s", appbase::input::GetKeyName(i));
 			}
 		}
 	}

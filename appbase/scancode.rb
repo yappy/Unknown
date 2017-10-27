@@ -26,6 +26,8 @@ print <<"EOS"
 
 #include <array>
 
+namespace {
+
 const std::array<const char *, #{CODE_NUM}> ScanCodeNames = {
 EOS
 
@@ -34,4 +36,8 @@ CODE_NUM.times do |i|
 	puts "\t\"#{table[i]}\","
 end
 
-puts '};'
+print <<EOS
+};
+
+}
+EOS

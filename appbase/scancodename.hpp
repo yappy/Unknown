@@ -4,6 +4,8 @@
 
 #include <array>
 
+namespace {
+
 const std::array<const char *, 256> ScanCodeNames = {
 	"",
 	"",
@@ -262,3 +264,5 @@ const std::array<const char *, 256> ScanCodeNames = {
 	"",
 	"",
 };
+
+}

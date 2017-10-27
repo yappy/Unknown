@@ -1,9 +1,15 @@
 #include <input.hpp>
 #include <exceptions.hpp>
 #include <algorithm>
+#include "scancodename.hpp"
 
 namespace appbase {
 namespace input {
+
+const char *GetKeyName(int code)
+{
+	return ScanCodeNames.at(code);
+}
 
 void InputManager::ProcessFrame()
 {
@@ -15,7 +21,7 @@ void InputManager::ProcessFrame()
 		m_keys.begin());
 }
 
-const InputManager::KeyState &InputManager::GetKeyState()
+const KeyState &InputManager::GetKeyState()
 {
 	return m_keys;
 }
