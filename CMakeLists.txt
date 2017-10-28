@@ -4,7 +4,8 @@ cmake_minimum_required(VERSION 3.7)
 set(CMAKE_VERBOSE_MAKEFILE 1)
 
 # Set install dir
-set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/dist")
+set(CMAKE_INSTALL_PREFIX
+	"${CMAKE_CURRENT_BINARY_DIR}/dist")
 
 
 # -cstd=c++14 (cmake cross-platform)
@@ -37,12 +38,22 @@ if(WIN32)
 		set(SDL2_LIBRARIES
 			"${SDL2_SDK_DIR}/lib/x64/SDL2.lib"
 			"${SDL2_SDK_DIR}/lib/x64/SDL2main.lib")
-		set(SDL2_IMAGE_LIBRARIES "${SDL2_IMAGE_SDK_DIR}/lib/x64/SDL2_image.lib")
+		file(GLOB SDL2_INSTALL_FILES
+			"${SDL2_SDK_DIR}/lib/x64/*.dll")
+		set(SDL2_IMAGE_LIBRARIES
+			"${SDL2_IMAGE_SDK_DIR}/lib/x64/SDL2_image.lib")
+		file(GLOB SDL2_IMAGE_INSTALL_FILES
+			"${SDL2_IMAGE_SDK_DIR}/lib/x64/*.dll")
 	else()
 		set(SDL2_LIBRARIES
 			"${SDL2_SDK_DIR}/lib/x86/SDL2.lib"
 			"${SDL2_SDK_DIR}/lib/x86/SDL2main.lib")
-		set(SDL2_IMAGE_LIBRARIES "${SDL2_IMAGE_SDK_DIR}/lib/x86/SDL2_image.lib")
+		file(GLOB SDL2_INSTALL_FILES
+			"${SDL2_SDK_DIR}/lib/x86/*.dll")
+		set(SDL2_IMAGE_LIBRARIES
+			"${SDL2_IMAGE_SDK_DIR}/lib/x86/SDL2_image.lib")
+		file(GLOB SDL2_IMAGE_INSTALL_FILES
+			"${SDL2_IMAGE_SDK_DIR}/lib/x86/*.dll")
 	endif()
 else()
 	find_package(PkgConfig)
