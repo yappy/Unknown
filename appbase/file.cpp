@@ -10,33 +10,9 @@ namespace appbase {
 namespace file {
 
 namespace {
-	const size_t BufSize = 64 * 1024;
-
 	// SDL_GetBasePath() cache
 	// should be accessed via GetBasePath()
 	std::string base_path;
-
-	template <class T>
-	T ReadAllInternal(const FilePointer &fp, size_t maxsize)
-	{
-		T result;
-		std::array<typename T::value_type, BufSize> buf;
-	
-		SDL_ClearError();
-		size_t read_size;
-		while ((read_size = SDL_RWread(fp.get(), buf.data(), 1, buf.size())) != 0) {
-			if (result.size() + read_size > maxsize) {
-				throw SDLFileError("File size over");
-			}
-			result.insert(result.end(), buf.cbegin(), buf.cbegin() + read_size);
-		}
-		if (*::SDL_GetError()) {
-			// read failed
-			// SDL_RWread() returns 0 and SDL error is not empty string
-			ThrowLastSDLError<SDLFileError>();
-		}
-		return result;
-	}
 }
 
 const std::string &GetBasePath()
@@ -77,14 +53,52 @@ FilePointer OpenW(const std::string &path)
 	return OpenInternal(path, "wb");
 }
 
+namespace {
+	const size_t BufSize = 64 * 1024;
+
+	// Func(void *buf, size_t read_size)
+	template <class Func>
+	void ReadAll(const FilePointer &fp, Func func)
+	{
+		std::array<uint8_t, BufSize> buf;
+
+		SDL_ClearError();
+		size_t read_size;
+		while ((read_size = SDL_RWread(fp.get(), buf.data(), 1, buf.size())) != 0) {
+			func(static_cast<void *>(buf.data()), read_size);
+		}
+		if (*::SDL_GetError() != '\0') {
+			// read failed
+			// SDL_RWread() returns 0 and SDL error is not empty string
+			ThrowLastSDLError<SDLFileError>();
+		}
+	}
+}
+
 Bytes ReadAllBytes(const FilePointer &fp, size_t maxsize)
 {
-	return ReadAllInternal<Bytes>(fp, maxsize);
+	Bytes result;
+	ReadAll(fp, [&result, maxsize](void *buf, size_t read_size) {
+		if (result.size() + read_size > maxsize) {
+			throw SDLFileError("File size over");
+		}
+		auto p = static_cast<uint8_t *>(buf);
+		result.insert(result.end(), p, p + read_size);
+	});
+
+	return result;
 }
 
 std::string ReadAllString(const FilePointer &fp, size_t maxsize)
 {
-	auto result = ReadAllInternal<std::string>(fp, maxsize);
+	std::string result;
+	ReadAll(fp, [&result, maxsize](void *buf, size_t read_size) {
+		if (result.size() + read_size > maxsize) {
+			throw SDLFileError("File size over");
+		}
+		auto p = static_cast<char *>(buf);
+		result.insert(result.end(), p, p + read_size);
+	});
 	if (result.find('\0') != std::string::npos) {
 		throw SDLFileError("NUL detected in text file");
 	}
