@@ -17,4 +17,3 @@ exec_cmake RelWithDebInfo
 exec_cmake MinSizeRel
 
 popd
-

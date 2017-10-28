@@ -13,6 +13,8 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PRIVATE appbase)
 target_link_libraries(${PROJECT_NAME} PRIVATE appbase)
 
-# Copy resource files to binary dir
-file(COPY ${RESOURCE_DIRS}
-	DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+#install
+install(TARGETS ${PROJECT_NAME}
+	RUNTIME DESTINATION ${PROJECT_NAME})
+install(DIRECTORY ${RESOURCE_DIRS}
+	DESTINATION ${PROJECT_NAME})
