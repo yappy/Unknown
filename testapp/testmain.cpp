@@ -31,7 +31,8 @@ public:
 	}
 };
 
-int main()
+// may be replaced with SDL_main
+int main(int argc, char *argv[])
 {
 	try {
 		{
