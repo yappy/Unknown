@@ -1,7 +1,7 @@
 @echo on
 cd /d %~dp0
 
-cmake --build win64 --config Debug
-cmake --build win64 --config Release
+cmake --build build --config Debug
+cmake --build build --config Release
 
 pause
