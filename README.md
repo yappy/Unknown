@@ -1,7 +1,7 @@
 # How to build
 
 ## Linux
-Only tested in Debian!
+Only tested on Debian 9!
 
 ### dependencies
 * C/C++ toolchains and fundamental tools
@@ -31,6 +31,7 @@ $ rm -rf build/
 Not yet.
 
 ## Windows
+Only tested on Windows 10 + Visual Studio 2017
 ### dependencies
 * Visual Studio 2017 (Visual C++)
 * cmake (You can set PATH at installer)
