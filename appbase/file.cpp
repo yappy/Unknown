@@ -1,5 +1,6 @@
 #include <file.hpp>
 #include <exceptions.hpp>
+#include <array>
 #include <regex>
 
 using appbase::error::SDLFileError;
