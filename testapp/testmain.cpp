@@ -24,6 +24,13 @@ public:
 				SDL_Log("Key: %s", appbase::input::GetKeyName(i));
 			}
 		}
+
+		const auto &mouse = Input().GetMouseState();
+		for (int i = 0; i < 3; i++) {
+			if (mouse.barray[i]) {
+				SDL_Log("Mouse: %d (%d, %d)", i, mouse.x, mouse.y);
+			}
+		}
 	}
 	void Render() override
 	{
