@@ -53,6 +53,7 @@ private:
 
 	SdlRendererPtr m_renderer;
 	SdlImagePtr m_sdl_image;
+	SdlTtfPtr m_sdl_ttf;
 };
 
 }

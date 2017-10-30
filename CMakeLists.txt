@@ -28,6 +28,7 @@ endif()
 
 # SDL2
 if(WIN32)
+	# TODO: SDL2_ttf
 	set(SDL2_SDK_DIR "${SDK_DIR_WIN}/SDL2-2.0.7")
 	set(SDL2_IMAGE_SDK_DIR "${SDK_DIR_WIN}/SDL2_image-2.0.2")
 
@@ -59,6 +60,7 @@ else()
 	find_package(PkgConfig)
 	pkg_check_modules(SDL2 REQUIRED sdl2)
 	pkg_check_modules(SDL2_IMAGE REQUIRED SDL2_image)
+	pkg_check_modules(SDL2_TTF REQUIRED SDL2_ttf)
 endif()
 
 # projects

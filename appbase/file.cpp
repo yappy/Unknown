@@ -3,11 +3,10 @@
 #include <array>
 #include <regex>
 
-using appbase::error::SDLFileError;
-using appbase::error::ThrowLastSDLError;
-
 namespace appbase {
 namespace file {
+
+using namespace appbase::error;
 
 namespace {
 	// SDL_GetBasePath() cache
@@ -25,7 +24,7 @@ const std::string &GetBasePath()
 			::SDL_GetBasePath(), del);
 		if (p == nullptr) {
 			// SDL_GetBasePath() failed
-			ThrowLastSDLError<SDLFileError>();
+			ThrowLastSdlError<SdlFileError>();
 		}
 		base_path = p.get();
 	}
@@ -37,7 +36,7 @@ namespace {
 	{
 		auto result = FilePointer(SDL_RWFromFile(path.c_str(), mode));
 		if (result == nullptr) {
-			ThrowLastSDLError<SDLFileError>();
+			ThrowLastSdlError<SdlFileError>();
 		}
 		return result;
 	}
@@ -70,7 +69,7 @@ namespace {
 		if (*::SDL_GetError() != '\0') {
 			// read failed
 			// SDL_RWread() returns 0 and SDL error is not empty string
-			ThrowLastSDLError<SDLFileError>();
+			ThrowLastSdlError<SdlFileError>();
 		}
 	}
 }
@@ -80,7 +79,7 @@ Bytes ReadAllBytes(const FilePointer &fp, size_t maxsize)
 	Bytes result;
 	ReadAll(fp, [&result, maxsize](void *buf, size_t read_size) {
 		if (result.size() + read_size > maxsize) {
-			throw SDLFileError("File size over");
+			throw SdlFileError("File size over");
 		}
 		auto p = static_cast<uint8_t *>(buf);
 		result.insert(result.end(), p, p + read_size);
@@ -94,13 +93,13 @@ std::string ReadAllString(const FilePointer &fp, size_t maxsize)
 	std::string result;
 	ReadAll(fp, [&result, maxsize](void *buf, size_t read_size) {
 		if (result.size() + read_size > maxsize) {
-			throw SDLFileError("File size over");
+			throw SdlFileError("File size over");
 		}
 		auto p = static_cast<char *>(buf);
 		result.insert(result.end(), p, p + read_size);
 	});
 	if (result.find('\0') != std::string::npos) {
-		throw SDLFileError("NUL detected in text file");
+		throw SdlFileError("NUL detected in text file");
 	}
 	return result;
 }
@@ -133,7 +132,7 @@ void WriteAllBytes(const FilePointer &fp, const void *buf, size_t size)
 {
 	size_t ret = SDL_RWwrite(fp.get(), buf, 1, size);
 	if (ret != size) {
-		ThrowLastSDLError<SDLFileError>();
+		ThrowLastSdlError<SdlFileError>();
 	}
 }
 
@@ -196,7 +195,7 @@ void ConfigFile::Load(const std::string &filepath)
 		}
 		// close
 	}
-	catch (SDLFileError &) {
+	catch (SdlFileError &) {
 		// read error: log and ignore
 		SDL_Log("Load config file failed: %s", filepath.c_str());
 	}
@@ -204,7 +203,7 @@ void ConfigFile::Load(const std::string &filepath)
 	try {
 		Save(filepath);
 	}
-	catch (SDLFileError &) {
+	catch (SdlFileError &) {
 		// write error: log and rethrow
 		SDL_Log("Recreate config file failed: %s", filepath.c_str());
 		throw;
