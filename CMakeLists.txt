@@ -7,6 +7,9 @@ set(CMAKE_VERBOSE_MAKEFILE 1)
 set(CMAKE_INSTALL_PREFIX
 	"${CMAKE_CURRENT_BINARY_DIR}/dist")
 
+# SDK dir
+set(SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sdk")
+set(SDK_FONT_DIR "${SDK_DIR}/font")
 
 # -cstd=c++14 (cmake cross-platform)
 set(CMAKE_CXX_STANDARD 14)
@@ -21,7 +24,6 @@ endif()
 
 
 # external dependencies
-set(SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sdk")
 if(WIN32)
 	set(SDK_DIR_WIN "${SDK_DIR}/win")
 endif()

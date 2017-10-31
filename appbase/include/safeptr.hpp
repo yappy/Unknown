@@ -81,4 +81,12 @@ struct SdlTtfDeleter {
 };
 using SdlTtfPtr = std::unique_ptr<void, SdlTtfDeleter>;
 
+struct SdlFontDeleter {
+	void operator()(TTF_Font *p) noexcept
+	{
+		::TTF_CloseFont(p);
+	}
+};
+using SdlFontPtr = std::unique_ptr<TTF_Font, SdlFontDeleter>;
+
 }

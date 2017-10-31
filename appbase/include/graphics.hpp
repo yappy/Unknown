@@ -48,6 +48,18 @@ public:
 	}
 	std::tuple<int, int> GetTextureSize(const SdlTexturePtr &tex);
 
+	// (Can be called in sub thread)
+	SdlFontPtr LoadFont(const std::string &path, int hsize);
+	// Can be called in sub thread
+	SdlSurfacePtr CreateFontImage(const SdlFontPtr &font,
+		const std::string &utf8str);
+	// All in one
+	SdlTexturePtr CreateFontTexture(const SdlFontPtr &font,
+		const std::string &utf8str)
+	{
+		return CreateTexture(CreateFontImage(font, utf8str));
+	}
+
 private:
 	GraphicsSettings m_settings;
 

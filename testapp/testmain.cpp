@@ -5,7 +5,7 @@
 
 class MyApp : public appbase::Application {
 private:
-	appbase::SdlTexturePtr m_tex;
+	appbase::SdlTexturePtr m_tex, m_strtex;
 public:
 	// inheriting constructor
 	using Application::Application;
@@ -14,6 +14,9 @@ public:
 	{
 		m_tex = Graph().LoadTexture(
 			appbase::file::FromBasePath("res/sample_8_index.png"));
+		auto font = Graph().LoadFont(
+			appbase::file::FromBasePath("res/ipaexg00301/ipaexg.ttf"), 32);
+		m_strtex = Graph().CreateFontTexture(font, u8"ほ");
 	}
 
 	void Update() override
@@ -28,6 +31,7 @@ public:
 	void Render() override
 	{
 		Graph().DrawTexture(m_tex, 0, 0);
+		Graph().DrawTexture(m_strtex, 0, 100);
 	}
 };
 

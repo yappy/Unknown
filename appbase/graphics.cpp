@@ -112,5 +112,28 @@ std::tuple<int, int> GraphicsManager::GetTextureSize(const SdlTexturePtr &tex)
 	return std::make_tuple(w, h);
 }
 
+SdlFontPtr GraphicsManager::LoadFont(const std::string &path, int hsize)
+{
+	::SDL_Log("Load font: %s", path.c_str());
+	SdlFontPtr font(::TTF_OpenFont(path.c_str(), hsize));
+	if (font == nullptr) {
+		ThrowLastSdlTtfError<SdlTtfError>();
+	}
+	return font;
+}
+
+SdlSurfacePtr GraphicsManager::CreateFontImage(const SdlFontPtr &font,
+	const std::string &utf8str)
+{
+	// white
+	SDL_Color color = { 255, 255, 255, 255 };
+	SdlSurfacePtr surface(::TTF_RenderUTF8_Solid(
+		font.get(), utf8str.c_str(), color));
+	if (surface == nullptr) {
+		ThrowLastSdlTtfError<SdlTtfError>();
+	}
+	return surface;
+}
+
 }
 }
