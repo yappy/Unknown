@@ -51,13 +51,11 @@ public:
 	// (Can be called in sub thread)
 	SdlFontPtr LoadFont(const std::string &path, int hsize);
 	// Can be called in sub thread
-	SdlSurfacePtr CreateFontImage(const SdlFontPtr &font,
-		const std::string &utf8str);
+	SdlSurfacePtr CreateFontImage(const SdlFontPtr &font, char32_t codepoint);
 	// All in one
-	SdlTexturePtr CreateFontTexture(const SdlFontPtr &font,
-		const std::string &utf8str)
+	SdlTexturePtr CreateFontTexture(const SdlFontPtr &font, char32_t codepoint)
 	{
-		return CreateTexture(CreateFontImage(font, utf8str));
+		return CreateTexture(CreateFontImage(font, codepoint));
 	}
 
 private:

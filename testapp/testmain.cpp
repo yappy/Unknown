@@ -16,7 +16,8 @@ public:
 			appbase::file::FromBasePath("res/sample_8_index.png"));
 		auto font = Graph().LoadFont(
 			appbase::file::FromBasePath("res/ipaexg00301/ipaexg.ttf"), 32);
-		m_strtex = Graph().CreateFontTexture(font, u8"ほ");
+		// 'ho'
+		m_strtex = Graph().CreateFontTexture(font, 0x307B);
 	}
 
 	void Update() override

@@ -123,12 +123,35 @@ SdlFontPtr GraphicsManager::LoadFont(const std::string &path, int hsize)
 }
 
 SdlSurfacePtr GraphicsManager::CreateFontImage(const SdlFontPtr &font,
-	const std::string &utf8str)
+	char32_t codepoint)
 {
 	// white
 	SDL_Color color = { 255, 255, 255, 255 };
-	SdlSurfacePtr surface(::TTF_RenderUTF8_Solid(
-		font.get(), utf8str.c_str(), color));
+	// codepoint to utf-16 string
+	std::array<Uint16, 3> str;
+	if (codepoint <= 0xD7FF || (codepoint >= 0xE000 && codepoint <= 0xFFFF)) {
+		str[0] = codepoint;
+		str[1] = 0;
+	}
+	// surrogate pair seems not to be supported...
+	/*
+	else if (codepoint >= 0x10000 && codepoint <= 0x10FFFF) {
+		auto c = static_cast<uint32_t>(codepoint);
+		uint32_t w = ((codepoint & 0x1F00) >> 16) - 1;
+		uint32_t x = (codepoint & 0xFF);
+		uint32_t xl = (x & 0x3FF);
+		uint32_t xh = ((x >> 10) & 0x3F);
+		str[0] = 0b1101100000000000 | (w << 6) | xh;
+		str[1] = 0b1101110000000000 | xl;
+		str[2] = 0;
+	}
+	*/
+	else {
+		str[0] = '?';
+		str[1] = 0;
+	}
+	SdlSurfacePtr surface(::TTF_RenderUNICODE_Solid(
+		font.get(), str.data(), color));
 	if (surface == nullptr) {
 		ThrowLastSdlTtfError<SdlTtfError>();
 	}
