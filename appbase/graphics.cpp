@@ -1,5 +1,6 @@
 #include <graphics.hpp>
 #include <exceptions.hpp>
+#include <array>
 
 namespace appbase {
 namespace graph {
@@ -130,7 +131,7 @@ SdlSurfacePtr GraphicsManager::CreateFontImage(const SdlFontPtr &font,
 	// codepoint to utf-16 string
 	std::array<Uint16, 3> str;
 	if (codepoint <= 0xD7FF || (codepoint >= 0xE000 && codepoint <= 0xFFFF)) {
-		str[0] = codepoint;
+		str[0] = static_cast<Uint16>(codepoint);
 		str[1] = 0;
 	}
 	// surrogate pair seems not to be supported...
