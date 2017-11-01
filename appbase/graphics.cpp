@@ -84,6 +84,54 @@ void GraphicsManager::DrawTexture(const SdlTexturePtr &tex,
 	::SDL_RenderCopy(m_renderer.get(), tex.get(), nullptr, &dst);
 }
 
+void GraphicsManager::DrawStringUtf8(
+	const CharTextureMap &ctex, const char *str, int x, int y)
+{
+	auto p = static_cast<const uint8_t *>(static_cast<const void *>(str));
+	while (*p != '\0') {
+		uint32_t c = 0;
+		if ((*p & 0b1'0000000) == 0b0'0000000) {
+			c = *p++;
+		}
+		else if ((*p & 0b111'00000) == 0b110'11111) {
+			uint8_t c1 = *p++;
+			uint8_t c2 = *p++;
+			if ((c2 & 0b11'000000) != 0b10'000000) {
+				break;
+			}
+			c = ((c1 & 0b000'11111) << 6) | (c2 & 0b00'111111);
+			if (c < 0x80) {
+				break;
+			}
+		}
+		else if ((*p & 0b1111'0000) == 0b1110'0000) {
+			uint8_t c1 = *p++;
+			uint8_t c2 = *p++;
+			if ((c2 & 0b11'000000) != 0b10'000000) {
+				break;
+			}
+			uint8_t c3 = *p++;
+			if ((c3 & 0b11'000000) != 0b10'000000) {
+				break;
+			}
+			c = ((c1 & 0b0000'1111) << 12) |
+				((c2 & 0b000'11111) << 6) |
+				(c3 & 0b00'111111);
+			if (c < 0x800) {
+				break;
+			}
+		}
+		else {
+			// >16bit codepoint seems not to be supported...
+			break;
+		}
+		// might throw std::out_of_range
+		const auto &tex = ctex.at(c);
+		DrawTexture(tex, x, y);
+		x += GetTextureSize(tex).first;
+	}
+}
+
 SdlSurfacePtr GraphicsManager::LoadImage(const std::string &path)
 {
 	::SDL_Log("Load image: %s", path.c_str());
@@ -104,13 +152,13 @@ SdlTexturePtr GraphicsManager::CreateTexture(const SdlSurfacePtr &surface)
 	return texture;
 }
 
-std::tuple<int, int> GraphicsManager::GetTextureSize(const SdlTexturePtr &tex)
+std::pair<int, int> GraphicsManager::GetTextureSize(const SdlTexturePtr &tex)
 {
 	int w, h;
 	if(::SDL_QueryTexture(tex.get(), nullptr, nullptr, &w, &h) < 0) {
 		ThrowLastSdlError<SdlError>();
 	}
-	return std::make_tuple(w, h);
+	return std::make_pair(w, h);
 }
 
 SdlFontPtr GraphicsManager::LoadFont(const std::string &path, int hsize)
@@ -157,6 +205,25 @@ SdlSurfacePtr GraphicsManager::CreateFontImage(const SdlFontPtr &font,
 		ThrowLastSdlTtfError<SdlTtfError>();
 	}
 	return surface;
+}
+
+CharTextureMap GraphicsManager::CreateFontTextureMap(const SdlFontPtr &font,
+	std::initializer_list<std::pair<char32_t, char32_t>> ranges)
+{
+	CharTextureMap result;
+	for (const auto &range : ranges) {
+		char32_t start = range.first;
+		char32_t end = range.second;
+		if (start > end) {
+			throw std::invalid_argument("start > end");
+		}
+		for (char32_t c = start; c <= end; c++) {
+			SdlTexturePtr tex = CreateTexture(
+				CreateFontImage(font, c));
+			result.emplace(c, std::move(tex));
+		}
+	}
+	return result;
 }
 
 }

@@ -5,7 +5,8 @@
 
 class MyApp : public appbase::Application {
 private:
-	appbase::SdlTexturePtr m_tex, m_strtex;
+	appbase::SdlTexturePtr m_tex;
+	appbase::graph::CharTextureMap m_fonttex;
 public:
 	// inheriting constructor
 	using Application::Application;
@@ -17,7 +18,11 @@ public:
 		auto font = Graph().LoadFont(
 			appbase::file::FromBasePath("res/ipaexg00301/ipaexg.ttf"), 32);
 		// 'ho'
-		m_strtex = Graph().CreateFontTexture(font, 0x307B);
+		m_fonttex = Graph().CreateFontTextureMap(font,
+			{
+				// hiragana
+				{ 0x3040, 0x309F }
+			});
 	}
 
 	void Update() override
@@ -32,7 +37,7 @@ public:
 	void Render() override
 	{
 		Graph().DrawTexture(m_tex, 0, 0);
-		Graph().DrawTexture(m_strtex, 0, 100);
+		Graph().DrawStringUtf8(m_fonttex, u8"ほわいと", 0, 100);
 	}
 };
 

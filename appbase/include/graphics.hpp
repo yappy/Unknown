@@ -2,7 +2,7 @@
 
 #include <SDL.h>
 #include <string>
-#include <tuple>
+#include <unordered_map>
 #include "safeptr.hpp"
 
 namespace appbase {
@@ -23,6 +23,8 @@ struct GraphicsSettings {
 	} loadEnable;
 };
 
+using CharTextureMap = std::unordered_map<char32_t, SdlTexturePtr>;
+
 class GraphicsManager final {
 public:
 	GraphicsManager(const GraphicsManager &) = delete;
@@ -36,6 +38,8 @@ public:
 	void Present();
 
 	void DrawTexture(const SdlTexturePtr &tex, int x, int y);
+	void DrawStringUtf8(const CharTextureMap &ctex, const char *str,
+		 int x, int y);
 
 	// Can be called in sub thread
 	SdlSurfacePtr LoadImage(const std::string &path);
@@ -46,7 +50,7 @@ public:
 	{
 		return CreateTexture(LoadImage(path));
 	}
-	std::tuple<int, int> GetTextureSize(const SdlTexturePtr &tex);
+	std::pair<int, int> GetTextureSize(const SdlTexturePtr &tex);
 
 	// (Can be called in sub thread)
 	SdlFontPtr LoadFont(const std::string &path, int hsize);
@@ -57,6 +61,9 @@ public:
 	{
 		return CreateTexture(CreateFontImage(font, codepoint));
 	}
+	// Create multiple font textures at once
+	CharTextureMap CreateFontTextureMap(const SdlFontPtr &font,
+		std::initializer_list<std::pair<char32_t, char32_t>> ranges);
 
 private:
 	GraphicsSettings m_settings;
