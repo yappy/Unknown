@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include <stdexcept>
 #include <type_traits>
 
@@ -14,38 +15,48 @@ public:
 	using runtime_error::runtime_error;
 };
 
-class SDLError : public AppBaseError {
+class SdlError : public AppBaseError {
 public:
-	// inheriting constructors
 	using AppBaseError::AppBaseError;
 };
 
-class SDLFileError : public SDLError {
+class SdlFileError : public SdlError {
 public:
-	// inheriting constructors
-	using SDLError::SDLError;
+	using SdlError::SdlError;
 };
 
-class SDLImageError : public AppBaseError {
+class SdlImageError : public AppBaseError {
 public:
-	// inheriting constructors
+	using AppBaseError::AppBaseError;
+};
+
+class SdlTtfError : public AppBaseError {
+public:
 	using AppBaseError::AppBaseError;
 };
 
 template <class T> 
-[[noreturn]] inline void ThrowLastSDLError()
+[[noreturn]] inline void ThrowLastSdlError()
 {
-	static_assert(std::is_base_of<SDLError, T>::value,
-		"T must inherit SDLError");
+	static_assert(std::is_base_of<SdlError, T>::value,
+		"T must inherit SdlError");
 	throw T(::SDL_GetError());
 }
 
 template <class T>
-[[noreturn]] inline void ThrowLastSDLImageError()
+[[noreturn]] inline void ThrowLastSdlImageError()
 {
-	static_assert(std::is_base_of<SDLImageError, T>::value,
-		"T must inherit SDLImageError");
+	static_assert(std::is_base_of<SdlImageError, T>::value,
+		"T must inherit SdlImageError");
 	throw T(::IMG_GetError());
+}
+
+template <class T>
+[[noreturn]] inline void ThrowLastSdlTtfError()
+{
+	static_assert(std::is_base_of<SdlTtfError, T>::value,
+		"T must inherit SdlTtfError");
+	throw T(::TTF_GetError());
 }
 
 }

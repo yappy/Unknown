@@ -2,8 +2,7 @@
 
 namespace appbase {
 
-using appbase::error::SDLError;
-using appbase::error::ThrowLastSDLError;
+using namespace appbase::error;
 
 Application::Application(const ApplicationSettings &settings,
 	const graph::GraphicsSettings &graphSettings) :
@@ -18,8 +17,8 @@ Application::Application(const ApplicationSettings &settings,
 		linked.major, linked.minor, linked.patch);
 
 	::SDL_Log("Initialize SDL...");
-	if (::SDL_Init(SDL_INIT_EVERYTHING)) {
-		ThrowLastSDLError<SDLError>();
+	if (::SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+		ThrowLastSdlError<SdlError>();
 	}
 	m_sdl.reset(this);
 	::SDL_Log("Initialize SDL OK");
@@ -36,7 +35,7 @@ Application::Application(const ApplicationSettings &settings,
 		settings.w, settings.h,
 		0));
 	if (m_window == nullptr) {
-		ThrowLastSDLError<SDLError>();
+		ThrowLastSdlError<SdlError>();
 	}
 	::SDL_Log("Create window OK");
 

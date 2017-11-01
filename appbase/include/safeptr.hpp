@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include <memory>
 
 namespace appbase {
@@ -69,5 +70,23 @@ struct SdlImageDeleter {
 	}
 };
 using SdlImagePtr = std::unique_ptr<void, SdlImageDeleter>;
+
+/* SDL_ttf */
+struct SdlTtfDeleter {
+	void operator()(void *p) noexcept
+	{
+		::SDL_Log("Quit SDL_ttf");
+		::TTF_Quit();
+	}
+};
+using SdlTtfPtr = std::unique_ptr<void, SdlTtfDeleter>;
+
+struct SdlFontDeleter {
+	void operator()(TTF_Font *p) noexcept
+	{
+		::TTF_CloseFont(p);
+	}
+};
+using SdlFontPtr = std::unique_ptr<TTF_Font, SdlFontDeleter>;
 
 }
