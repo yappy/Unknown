@@ -5,7 +5,8 @@ set(SOURCE_FILES
 	application.cpp
 	file.cpp
 	graphics.cpp
-	input.cpp)
+	input.cpp
+	sound.cpp)
 
 # static lib target
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
@@ -17,8 +18,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC include/)
 target_include_directories(${PROJECT_NAME} PUBLIC
 	${SDL2_INCLUDE_DIRS}
 	${SDL2_IMAGE_INCLUDE_DIRS}
-	${SDL2_TTF_INCLUDE_DIRS})
+	${SDL2_TTF_INCLUDE_DIRS}
+	${SDL2_MIXER_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC
 	${SDL2_LIBRARIES}
 	${SDL2_IMAGE_LIBRARIES}
-	${SDL2_TTF_LIBRARIES})
+	${SDL2_TTF_LIBRARIES}
+	${SDL2_MIXER_LIBRARIES})
