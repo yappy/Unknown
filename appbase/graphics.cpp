@@ -34,9 +34,9 @@ GraphicsManager::GraphicsManager(const GraphicsSettings &settings,
 	{
 		::SDL_Log("Initialize SDL_image...");
 		int flags = 0;
-		flags |= m_settings.loadEnable.jpg ? IMG_INIT_JPG : 0;
-		flags |= m_settings.loadEnable.png ? IMG_INIT_PNG : 0;
-		flags |= m_settings.loadEnable.tif ? IMG_INIT_TIF : 0;
+		flags |= m_settings.load_enable.jpg ? IMG_INIT_JPG : 0;
+		flags |= m_settings.load_enable.png ? IMG_INIT_PNG : 0;
+		flags |= m_settings.load_enable.tif ? IMG_INIT_TIF : 0;
 		int inited = IMG_Init(flags);
 		if ((inited & flags) != flags) {
 			throw SdlImageError("SDL_image init failed");

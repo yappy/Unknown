@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 #include <memory>
 
 namespace appbase {
@@ -88,5 +89,15 @@ struct SdlFontDeleter {
 	}
 };
 using SdlFontPtr = std::unique_ptr<TTF_Font, SdlFontDeleter>;
+
+/* SDL_mixer */
+struct SdlMixerDeleter {
+	void operator()(void *p) noexcept
+	{
+		::SDL_Log("Quit SDL_mixer");
+		::Mix_Quit();
+	}
+};
+using SdlMixerPtr= std::unique_ptr<void, SdlMixerDeleter>;
 
 }

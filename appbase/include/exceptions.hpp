@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 #include <stdexcept>
 #include <type_traits>
 
@@ -35,6 +36,11 @@ public:
 	using AppBaseError::AppBaseError;
 };
 
+class SdlMixerError : public AppBaseError {
+public:
+	using AppBaseError::AppBaseError;
+};
+
 template <class T> 
 [[noreturn]] inline void ThrowLastSdlError()
 {
@@ -57,6 +63,14 @@ template <class T>
 	static_assert(std::is_base_of<SdlTtfError, T>::value,
 		"T must inherit SdlTtfError");
 	throw T(::TTF_GetError());
+}
+
+template <class T>
+[[noreturn]] inline void ThrowLastSdlMixerError()
+{
+	static_assert(std::is_base_of<SdlMixerError, T>::value,
+		"T must inherit SdlMixerError");
+	throw T(::Mix_GetError());
 }
 
 }

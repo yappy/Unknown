@@ -5,7 +5,8 @@ namespace appbase {
 using namespace appbase::error;
 
 Application::Application(const ApplicationSettings &settings,
-	const graph::GraphicsSettings &graphSettings) :
+	const graph::GraphicsSettings &graph_settings,
+	const sound::SoundSettings &sound_settings) :
 	m_settings(settings)
 {
 	SDL_version compiled, linked;
@@ -40,7 +41,9 @@ Application::Application(const ApplicationSettings &settings,
 	::SDL_Log("Create window OK");
 
 	m_graph = std::make_unique<graph::GraphicsManager>(
-		graphSettings, m_window);
+		graph_settings, m_window);
+	m_sound = std::make_unique<sound::SoundManager>(
+		sound_settings);
 	m_input = std::make_unique<input::InputManager>();
 }
 

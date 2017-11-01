@@ -21,7 +21,7 @@ struct GraphicsSettings {
 		bool jpg = false;
 		bool png = true;
 		bool tif = false;
-	} loadEnable;
+	} load_enable;
 };
 
 using CharTextureMap = std::unordered_map<char32_t, SdlTexturePtr>;

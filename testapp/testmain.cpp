@@ -80,10 +80,13 @@ int main(int argc, char *argv[])
 		appbase::ApplicationSettings settings;
 		settings.title = "Test App";
 
-		appbase::graph::GraphicsSettings graphSettings;
-		graphSettings.clear.b = 0x80;
+		appbase::graph::GraphicsSettings graph_settings;
+		graph_settings.clear.b = 0x80;
 
-		auto app = std::make_unique<MyApp>(settings, graphSettings);
+		appbase::sound::SoundSettings sound_settings;
+
+		auto app = std::make_unique<MyApp>(settings,
+			graph_settings, sound_settings);
 		app->Load();
 		app->Run();
 	}
