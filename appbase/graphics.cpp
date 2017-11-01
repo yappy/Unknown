@@ -26,7 +26,7 @@ GraphicsManager::GraphicsManager(const GraphicsSettings &settings,
 				window.get(), -1, flags | SDL_RENDERER_SOFTWARE));
 		}
 		if (m_renderer == nullptr) {
-			ThrowLastSdlError<SdlError>();
+			ThrowLastSdlError();
 		}
 		::SDL_Log("Create renderer OK");
 	}
@@ -48,7 +48,7 @@ GraphicsManager::GraphicsManager(const GraphicsSettings &settings,
 	{
 		::SDL_Log("Initialize SDL_ttf...");
 		if (TTF_Init() < 0) {
-			ThrowLastSdlTtfError<SdlTtfError>();
+			ThrowLastSdlTtfError();
 		}
 		m_sdl_ttf.reset(this);
 		::SDL_Log("Initialize SDL_ttf OK");
@@ -60,10 +60,10 @@ void GraphicsManager::Clear()
 	if (::SDL_SetRenderDrawColor(m_renderer.get(),
 		m_settings.clear.r, m_settings.clear.g, m_settings.clear.b,
 		m_settings.clear.a) < 0) {
-		ThrowLastSdlError<SdlError>();
+		ThrowLastSdlError();
 	}
 	if (::SDL_RenderClear(m_renderer.get()) < 0) {
-		ThrowLastSdlError<SdlError>();
+		ThrowLastSdlError();
 	}
 }
 
@@ -137,7 +137,7 @@ SdlSurfacePtr GraphicsManager::LoadImage(const std::string &path)
 	::SDL_Log("Load image: %s", path.c_str());
 	SdlSurfacePtr surface(IMG_Load(path.c_str()));
 	if (surface == nullptr) {
-		ThrowLastSdlImageError<SdlImageError>();
+		ThrowLastSdlImageError();
 	}
 	return surface;
 }
@@ -147,7 +147,7 @@ SdlTexturePtr GraphicsManager::CreateTexture(const SdlSurfacePtr &surface)
 	SdlTexturePtr texture(SDL_CreateTextureFromSurface(
 		m_renderer.get(), surface.get()));
 	if (texture == nullptr) {
-		ThrowLastSdlImageError<SdlImageError>();
+		ThrowLastSdlImageError();
 	}
 	return texture;
 }
@@ -156,7 +156,7 @@ std::pair<int, int> GraphicsManager::GetTextureSize(const SdlTexturePtr &tex)
 {
 	int w, h;
 	if(::SDL_QueryTexture(tex.get(), nullptr, nullptr, &w, &h) < 0) {
-		ThrowLastSdlError<SdlError>();
+		ThrowLastSdlError();
 	}
 	return std::make_pair(w, h);
 }
@@ -166,7 +166,7 @@ SdlFontPtr GraphicsManager::LoadFont(const std::string &path, int hsize)
 	::SDL_Log("Load font: %s", path.c_str());
 	SdlFontPtr font(::TTF_OpenFont(path.c_str(), hsize));
 	if (font == nullptr) {
-		ThrowLastSdlTtfError<SdlTtfError>();
+		ThrowLastSdlTtfError();
 	}
 	return font;
 }
@@ -202,7 +202,7 @@ SdlSurfacePtr GraphicsManager::CreateFontImage(const SdlFontPtr &font,
 	SdlSurfacePtr surface(::TTF_RenderUNICODE_Solid(
 		font.get(), str.data(), color));
 	if (surface == nullptr) {
-		ThrowLastSdlTtfError<SdlTtfError>();
+		ThrowLastSdlTtfError();
 	}
 	return surface;
 }

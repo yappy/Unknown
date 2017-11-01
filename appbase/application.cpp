@@ -19,7 +19,7 @@ Application::Application(const ApplicationSettings &settings,
 
 	::SDL_Log("Initialize SDL...");
 	if (::SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-		ThrowLastSdlError<SdlError>();
+		ThrowLastSdlError();
 	}
 	m_sdl.reset(this);
 	::SDL_Log("Initialize SDL OK");
@@ -36,7 +36,7 @@ Application::Application(const ApplicationSettings &settings,
 		settings.w, settings.h,
 		0));
 	if (m_window == nullptr) {
-		ThrowLastSdlError<SdlError>();
+		ThrowLastSdlError();
 	}
 	::SDL_Log("Create window OK");
 

@@ -25,7 +25,7 @@ SoundManager::SoundManager(const SoundSettings &settings) :
 	}
 	int inited = Mix_Init(flags);
 	if ((inited & flags) != flags) {
-		ThrowLastSdlMixerError<SdlMixerError>();
+		ThrowLastSdlMixerError();
 	}
 
 	m_sdl_mixer.reset(this);

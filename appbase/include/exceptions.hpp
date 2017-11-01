@@ -41,7 +41,7 @@ public:
 	using AppBaseError::AppBaseError;
 };
 
-template <class T> 
+template <class T = SdlError>
 [[noreturn]] inline void ThrowLastSdlError()
 {
 	static_assert(std::is_base_of<SdlError, T>::value,
@@ -49,7 +49,7 @@ template <class T>
 	throw T(::SDL_GetError());
 }
 
-template <class T>
+template <class T = SdlImageError>
 [[noreturn]] inline void ThrowLastSdlImageError()
 {
 	static_assert(std::is_base_of<SdlImageError, T>::value,
@@ -57,7 +57,7 @@ template <class T>
 	throw T(::IMG_GetError());
 }
 
-template <class T>
+template <class T = SdlTtfError>
 [[noreturn]] inline void ThrowLastSdlTtfError()
 {
 	static_assert(std::is_base_of<SdlTtfError, T>::value,
@@ -65,7 +65,7 @@ template <class T>
 	throw T(::TTF_GetError());
 }
 
-template <class T>
+template <class T = SdlMixerError>
 [[noreturn]] inline void ThrowLastSdlMixerError()
 {
 	static_assert(std::is_base_of<SdlMixerError, T>::value,
