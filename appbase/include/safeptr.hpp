@@ -40,7 +40,7 @@ using SdlWindowPtr = std::unique_ptr<SDL_Window, SdlWindowDeleter>;
 struct SdlRendererDeleter {
 	void operator()(SDL_Renderer *p) noexcept
 	{
-		::SDL_Log("Destroy Renderer");
+		::SDL_Log("Destroy renderer");
 		::SDL_DestroyRenderer(p);
 	}
 };
@@ -98,6 +98,15 @@ struct SdlMixerDeleter {
 		::Mix_Quit();
 	}
 };
-using SdlMixerPtr= std::unique_ptr<void, SdlMixerDeleter>;
+using SdlMixerPtr = std::unique_ptr<void, SdlMixerDeleter>;
+
+struct SdlAudioDeleter {
+	void operator()(void *p) noexcept
+	{
+		::SDL_Log("Close audio");
+		::Mix_CloseAudio();
+	}
+};
+using SdlAudioPtr = std::unique_ptr<void, SdlAudioDeleter>;
 
 }
