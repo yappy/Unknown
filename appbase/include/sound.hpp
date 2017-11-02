@@ -2,6 +2,7 @@
 
 #include <SDL_mixer.h>
 #include "safeptr.hpp"
+#include <string>
 
 namespace appbase {
 namespace sound {
