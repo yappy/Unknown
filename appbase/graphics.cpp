@@ -7,6 +7,10 @@ namespace graph {
 
 using namespace appbase::error;
 
+namespace {
+	const uint8_t UnknownChar = '?';
+}
+
 GraphicsManager::GraphicsManager(const GraphicsSettings &settings,
 	const SdlWindowPtr &window) :
 	m_settings(settings)
@@ -125,10 +129,16 @@ void GraphicsManager::DrawStringUtf8(
 			// >16bit codepoint seems not to be supported...
 			break;
 		}
-		// might throw std::out_of_range
-		const auto &tex = ctex.at(c);
-		DrawTexture(tex, x, y);
-		x += GetTextureSize(tex).first;
+		// try to find c, try to find UnknownChar, give up
+		auto it = ctex.find(c);
+		if (it == ctex.end()) {
+			it = ctex.find(UnknownChar);
+		}
+		if (it != ctex.end()) {
+			const auto &tex = it->second;
+			DrawTexture(tex, x, y);
+			x += GetTextureSize(tex).first;
+		}
 	}
 }
 
@@ -196,7 +206,7 @@ SdlSurfacePtr GraphicsManager::CreateFontImage(const SdlFontPtr &font,
 	}
 	*/
 	else {
-		str[0] = '?';
+		str[0] = UnknownChar;
 		str[1] = 0;
 	}
 	SdlSurfacePtr surface(::TTF_RenderUNICODE_Solid(
@@ -211,6 +221,12 @@ CharTextureMap GraphicsManager::CreateFontTextureMap(const SdlFontPtr &font,
 	std::initializer_list<std::pair<char32_t, char32_t>> ranges)
 {
 	CharTextureMap result;
+	// Add unknown character
+	{
+		SdlTexturePtr tex = CreateTexture(
+			CreateFontImage(font, UnknownChar));
+		result.emplace(UnknownChar, std::move(tex));
+	}
 	for (const auto &range : ranges) {
 		char32_t start = range.first;
 		char32_t end = range.second;
