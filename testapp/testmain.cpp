@@ -90,10 +90,16 @@ int main(int argc, char *argv[])
 		app->Load();
 		app->Run();
 	}
-	catch (appbase::error::AppBaseError &error) {
+	catch (std::exception &error) {
 		SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION,
 			"%s", error.what());
-		return 1;
+		return EXIT_FAILURE;
+	}
+	catch (...) {
+		// If main is replaced with SDL_main, SDL_main is C linkage.
+		SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION,
+			"Caught unknown exception");
+		return EXIT_FAILURE;
 	}
 	return 0;
 }
