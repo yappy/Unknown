@@ -65,6 +65,7 @@ void Application::Run()
 		}
 
 		// process frame
+		m_sound->ProcessFrame();
 		m_input->ProcessFrame();
 
 		// frame update

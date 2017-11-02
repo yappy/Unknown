@@ -109,4 +109,22 @@ struct SdlAudioDeleter {
 };
 using SdlAudioPtr = std::unique_ptr<void, SdlAudioDeleter>;
 
+struct SdlMusicDeleter {
+	void operator()(Mix_Music *p) noexcept
+	{
+		::Mix_FreeMusic(p);
+	}
+};
+using SdlMusicPtr = std::unique_ptr<Mix_Music, SdlMusicDeleter>;
+using SdlMusicSharedPtr = std::shared_ptr<SdlMusicPtr>;
+
+struct SdlChunkDeleter {
+	void operator()(Mix_Chunk *p) noexcept
+	{
+		::Mix_FreeChunk(p);
+	}
+};
+using SdlChunkPtr = std::unique_ptr<Mix_Chunk, SdlChunkDeleter>;
+using SdlChunkSharedPtr = std::shared_ptr<SdlChunkPtr>;
+
 }
