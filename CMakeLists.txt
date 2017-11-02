@@ -39,10 +39,12 @@ if(WIN32)
 	set(SDL2_SDK_DIR "${SDK_DIR_WIN}/SDL2-2.0.7")
 	set(SDL2_IMAGE_SDK_DIR "${SDK_DIR_WIN}/SDL2_image-2.0.2")
 	set(SDL2_TTF_SDK_DIR "${SDK_DIR_WIN}/SDL2_ttf-2.0.14")
+	set(SDL2_MIXER_SDK_DIR "${SDK_DIR_WIN}/SDL2_mixer-2.0.1")
 
 	set(SDL2_INCLUDE_DIRS "${SDL2_SDK_DIR}/include")
 	set(SDL2_IMAGE_INCLUDE_DIRS "${SDL2_IMAGE_SDK_DIR}/include")
 	set(SDL2_TTF_INCLUDE_DIRS "${SDL2_TTF_SDK_DIR}/include")
+	set(SDL2_MIXER_INCLUDE_DIRS "${SDL2_MIXER_SDK_DIR}/include")
 
 	set(SDL2_LIBRARIES
 		"${SDL2_SDK_DIR}/lib/${WIN_ARCH}/SDL2.lib"
@@ -62,6 +64,10 @@ if(WIN32)
 	# Use zlib1 in SDL2_image. (probably newer one)
 	list(REMOVE_ITEM SDL2_TTF_INSTALL_FILES
 		"${SDL2_TTF_SDK_DIR}/lib/${WIN_ARCH}/zlib1.dll")
+	set(SDL2_MIXER_LIBRARIES
+		"${SDL2_MIXER_SDK_DIR}/lib/${WIN_ARCH}/SDL2_mixer.lib")
+	file(GLOB SDL2_MIXER_INSTALL_FILES
+		"${SDL2_MIXER_SDK_DIR}/lib/${WIN_ARCH}/*.dll")
 else()
 	find_package(PkgConfig)
 	pkg_check_modules(SDL2 REQUIRED sdl2)
