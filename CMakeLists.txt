@@ -22,6 +22,11 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unused -Werror -pedantic ${CMAKE_CXX_FLAGS}")
 endif()
 
+# MSVC specific options
+# source code utf-8
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+	set(CMAKE_CXX_FLAGS "/source-charset:utf-8 ${CMAKE_CXX_FLAGS}")
+endif()
 
 # external dependencies
 if(WIN32)
