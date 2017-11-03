@@ -5,7 +5,8 @@ namespace appbase {
 using namespace appbase::error;
 
 Application::Application(const ApplicationSettings &settings,
-	const graph::GraphicsSettings &graphSettings) :
+	const graph::GraphicsSettings &graph_settings,
+	const sound::SoundSettings &sound_settings) :
 	m_settings(settings)
 {
 	SDL_version compiled, linked;
@@ -18,7 +19,7 @@ Application::Application(const ApplicationSettings &settings,
 
 	::SDL_Log("Initialize SDL...");
 	if (::SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-		ThrowLastSdlError<SdlError>();
+		ThrowLastSdlError();
 	}
 	m_sdl.reset(this);
 	::SDL_Log("Initialize SDL OK");
@@ -35,12 +36,14 @@ Application::Application(const ApplicationSettings &settings,
 		settings.w, settings.h,
 		0));
 	if (m_window == nullptr) {
-		ThrowLastSdlError<SdlError>();
+		ThrowLastSdlError();
 	}
 	::SDL_Log("Create window OK");
 
 	m_graph = std::make_unique<graph::GraphicsManager>(
-		graphSettings, m_window);
+		graph_settings, m_window);
+	m_sound = std::make_unique<sound::SoundManager>(
+		sound_settings);
 	m_input = std::make_unique<input::InputManager>();
 }
 
@@ -62,6 +65,7 @@ void Application::Run()
 		}
 
 		// process frame
+		m_sound->ProcessFrame();
 		m_input->ProcessFrame();
 
 		// frame update

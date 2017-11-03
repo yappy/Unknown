@@ -7,6 +7,10 @@ namespace graph {
 
 using namespace appbase::error;
 
+namespace {
+	const uint8_t UnknownChar = '?';
+}
+
 GraphicsManager::GraphicsManager(const GraphicsSettings &settings,
 	const SdlWindowPtr &window) :
 	m_settings(settings)
@@ -26,7 +30,7 @@ GraphicsManager::GraphicsManager(const GraphicsSettings &settings,
 				window.get(), -1, flags | SDL_RENDERER_SOFTWARE));
 		}
 		if (m_renderer == nullptr) {
-			ThrowLastSdlError<SdlError>();
+			ThrowLastSdlError();
 		}
 		::SDL_Log("Create renderer OK");
 	}
@@ -34,9 +38,9 @@ GraphicsManager::GraphicsManager(const GraphicsSettings &settings,
 	{
 		::SDL_Log("Initialize SDL_image...");
 		int flags = 0;
-		flags |= m_settings.loadEnable.jpg ? IMG_INIT_JPG : 0;
-		flags |= m_settings.loadEnable.png ? IMG_INIT_PNG : 0;
-		flags |= m_settings.loadEnable.tif ? IMG_INIT_TIF : 0;
+		flags |= m_settings.load_enable.jpg ? IMG_INIT_JPG : 0;
+		flags |= m_settings.load_enable.png ? IMG_INIT_PNG : 0;
+		flags |= m_settings.load_enable.tif ? IMG_INIT_TIF : 0;
 		int inited = IMG_Init(flags);
 		if ((inited & flags) != flags) {
 			throw SdlImageError("SDL_image init failed");
@@ -48,7 +52,7 @@ GraphicsManager::GraphicsManager(const GraphicsSettings &settings,
 	{
 		::SDL_Log("Initialize SDL_ttf...");
 		if (TTF_Init() < 0) {
-			ThrowLastSdlTtfError<SdlTtfError>();
+			ThrowLastSdlTtfError();
 		}
 		m_sdl_ttf.reset(this);
 		::SDL_Log("Initialize SDL_ttf OK");
@@ -60,10 +64,10 @@ void GraphicsManager::Clear()
 	if (::SDL_SetRenderDrawColor(m_renderer.get(),
 		m_settings.clear.r, m_settings.clear.g, m_settings.clear.b,
 		m_settings.clear.a) < 0) {
-		ThrowLastSdlError<SdlError>();
+		ThrowLastSdlError();
 	}
 	if (::SDL_RenderClear(m_renderer.get()) < 0) {
-		ThrowLastSdlError<SdlError>();
+		ThrowLastSdlError();
 	}
 }
 
@@ -125,10 +129,16 @@ void GraphicsManager::DrawStringUtf8(
 			// >16bit codepoint seems not to be supported...
 			break;
 		}
-		// might throw std::out_of_range
-		const auto &tex = ctex.at(c);
-		DrawTexture(tex, x, y);
-		x += GetTextureSize(tex).first;
+		// try to find c, try to find UnknownChar, give up
+		auto it = ctex.find(c);
+		if (it == ctex.end()) {
+			it = ctex.find(UnknownChar);
+		}
+		if (it != ctex.end()) {
+			const auto &tex = it->second;
+			DrawTexture(tex, x, y);
+			x += GetTextureSize(tex).first;
+		}
 	}
 }
 
@@ -137,7 +147,7 @@ SdlSurfacePtr GraphicsManager::LoadImage(const std::string &path)
 	::SDL_Log("Load image: %s", path.c_str());
 	SdlSurfacePtr surface(IMG_Load(path.c_str()));
 	if (surface == nullptr) {
-		ThrowLastSdlImageError<SdlImageError>();
+		ThrowLastSdlImageError();
 	}
 	return surface;
 }
@@ -147,7 +157,7 @@ SdlTexturePtr GraphicsManager::CreateTexture(const SdlSurfacePtr &surface)
 	SdlTexturePtr texture(SDL_CreateTextureFromSurface(
 		m_renderer.get(), surface.get()));
 	if (texture == nullptr) {
-		ThrowLastSdlImageError<SdlImageError>();
+		ThrowLastSdlImageError();
 	}
 	return texture;
 }
@@ -156,7 +166,7 @@ std::pair<int, int> GraphicsManager::GetTextureSize(const SdlTexturePtr &tex)
 {
 	int w, h;
 	if(::SDL_QueryTexture(tex.get(), nullptr, nullptr, &w, &h) < 0) {
-		ThrowLastSdlError<SdlError>();
+		ThrowLastSdlError();
 	}
 	return std::make_pair(w, h);
 }
@@ -166,7 +176,7 @@ SdlFontPtr GraphicsManager::LoadFont(const std::string &path, int hsize)
 	::SDL_Log("Load font: %s", path.c_str());
 	SdlFontPtr font(::TTF_OpenFont(path.c_str(), hsize));
 	if (font == nullptr) {
-		ThrowLastSdlTtfError<SdlTtfError>();
+		ThrowLastSdlTtfError();
 	}
 	return font;
 }
@@ -196,13 +206,13 @@ SdlSurfacePtr GraphicsManager::CreateFontImage(const SdlFontPtr &font,
 	}
 	*/
 	else {
-		str[0] = '?';
+		str[0] = UnknownChar;
 		str[1] = 0;
 	}
 	SdlSurfacePtr surface(::TTF_RenderUNICODE_Solid(
 		font.get(), str.data(), color));
 	if (surface == nullptr) {
-		ThrowLastSdlTtfError<SdlTtfError>();
+		ThrowLastSdlTtfError();
 	}
 	return surface;
 }
@@ -211,6 +221,12 @@ CharTextureMap GraphicsManager::CreateFontTextureMap(const SdlFontPtr &font,
 	std::initializer_list<std::pair<char32_t, char32_t>> ranges)
 {
 	CharTextureMap result;
+	// Add unknown character
+	{
+		SdlTexturePtr tex = CreateTexture(
+			CreateFontImage(font, UnknownChar));
+		result.emplace(UnknownChar, std::move(tex));
+	}
 	for (const auto &range : ranges) {
 		char32_t start = range.first;
 		char32_t end = range.second;

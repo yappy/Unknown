@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL.h>
+#include <SDL_image.h>
 #include <string>
 #include <unordered_map>
 #include "safeptr.hpp"
@@ -20,7 +21,7 @@ struct GraphicsSettings {
 		bool jpg = false;
 		bool png = true;
 		bool tif = false;
-	} loadEnable;
+	} load_enable;
 };
 
 using CharTextureMap = std::unordered_map<char32_t, SdlTexturePtr>;

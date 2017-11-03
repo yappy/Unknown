@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 #include <memory>
 
 namespace appbase {
@@ -39,7 +40,7 @@ using SdlWindowPtr = std::unique_ptr<SDL_Window, SdlWindowDeleter>;
 struct SdlRendererDeleter {
 	void operator()(SDL_Renderer *p) noexcept
 	{
-		::SDL_Log("Destroy Renderer");
+		::SDL_Log("Destroy renderer");
 		::SDL_DestroyRenderer(p);
 	}
 };
@@ -88,5 +89,42 @@ struct SdlFontDeleter {
 	}
 };
 using SdlFontPtr = std::unique_ptr<TTF_Font, SdlFontDeleter>;
+
+/* SDL_mixer */
+struct SdlMixerDeleter {
+	void operator()(void *p) noexcept
+	{
+		::SDL_Log("Quit SDL_mixer");
+		::Mix_Quit();
+	}
+};
+using SdlMixerPtr = std::unique_ptr<void, SdlMixerDeleter>;
+
+struct SdlAudioDeleter {
+	void operator()(void *p) noexcept
+	{
+		::SDL_Log("Close audio");
+		::Mix_CloseAudio();
+	}
+};
+using SdlAudioPtr = std::unique_ptr<void, SdlAudioDeleter>;
+
+struct SdlMusicDeleter {
+	void operator()(Mix_Music *p) noexcept
+	{
+		::Mix_FreeMusic(p);
+	}
+};
+using SdlMusicPtr = std::unique_ptr<Mix_Music, SdlMusicDeleter>;
+using SdlMusicSharedPtr = std::shared_ptr<SdlMusicPtr>;
+
+struct SdlChunkDeleter {
+	void operator()(Mix_Chunk *p) noexcept
+	{
+		::Mix_FreeChunk(p);
+	}
+};
+using SdlChunkPtr = std::unique_ptr<Mix_Chunk, SdlChunkDeleter>;
+using SdlChunkSharedPtr = std::shared_ptr<SdlChunkPtr>;
 
 }

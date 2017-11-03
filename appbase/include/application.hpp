@@ -6,6 +6,7 @@
 #include "exceptions.hpp"
 #include "file.hpp"
 #include "graphics.hpp"
+#include "sound.hpp"
 #include "input.hpp"
 
 namespace appbase {
@@ -27,7 +28,8 @@ public:
 	Application & operator=(const Application &) = delete;
 
 	Application(const ApplicationSettings &settings,
-		const graph::GraphicsSettings &graphSettings);
+		const graph::GraphicsSettings &graph_settings,
+		const sound::SoundSettings &sound_settings);
 	virtual ~Application() = default;
 
 	virtual void Update() = 0;
@@ -38,6 +40,10 @@ public:
 	graph::GraphicsManager &Graph()
 	{
 		return *m_graph;
+	}
+	sound::SoundManager &Sound()
+	{
+		return *m_sound;
 	}
 	input::InputManager &Input()
 	{
@@ -51,6 +57,7 @@ private:
 	SdlPtr m_sdl;
 	SdlWindowPtr m_window;
 	std::unique_ptr<graph::GraphicsManager> m_graph;
+	std::unique_ptr<sound::SoundManager> m_sound;
 	std::unique_ptr<input::InputManager> m_input;
 };
 

@@ -7,22 +7,32 @@ class MyApp : public appbase::Application {
 private:
 	appbase::SdlTexturePtr m_tex;
 	appbase::graph::CharTextureMap m_fonttex;
+	appbase::SdlChunkSharedPtr m_se;
+	appbase::SdlMusicSharedPtr m_bgm;
 public:
 	// inheriting constructor
 	using Application::Application;
 
 	void Load()
 	{
+		using appbase::file::FromBasePath;
+
 		m_tex = Graph().LoadTexture(
-			appbase::file::FromBasePath("res/sample_8_index.png"));
+			FromBasePath("res/sample_8_index.png"));
 		auto font = Graph().LoadFont(
-			appbase::file::FromBasePath("res/ipaexg00301/ipaexg.ttf"), 32);
-		// 'ho'
+			FromBasePath("res/ipaexg00301/ipaexg.ttf"), 32);
 		m_fonttex = Graph().CreateFontTextureMap(font,
 			{
 				// hiragana
-				{ 0x3040, 0x309F }
+				{ 0x3040, 0x309F },
+				// katakana
+				{ 0x30A0, 0x30FF },
 			});
+
+		m_se = Sound().LoadSe(FromBasePath("res/sound/tm2_hit005.wav"));
+		m_bgm = Sound().LoadBgm(FromBasePath("res/sound/tm2_footstep003.ogg"));
+
+		Sound().PlayBgm(m_bgm);
 	}
 
 	void Update() override
@@ -40,11 +50,19 @@ public:
 				SDL_Log("Mouse: %d (%d, %d)", i, mouse.x, mouse.y);
 			}
 		}
+
+		if (keys[SDL_SCANCODE_Z]) {
+			bool ok = Sound().PlaySe(m_se);
+			if (!ok) {
+				SDL_Log("Sound effect mixer full");
+			}
+		}
 	}
 	void Render() override
 	{
 		Graph().DrawTexture(m_tex, 0, 0);
 		Graph().DrawStringUtf8(m_fonttex, u8"ほわいと", 0, 100);
+		Graph().DrawStringUtf8(m_fonttex, u8"ぜっときーでこうかおん", 0, 200);
 	}
 };
 
@@ -80,17 +98,26 @@ int main(int argc, char *argv[])
 		appbase::ApplicationSettings settings;
 		settings.title = "Test App";
 
-		appbase::graph::GraphicsSettings graphSettings;
-		graphSettings.clear.b = 0x80;
+		appbase::graph::GraphicsSettings graph_settings;
+		graph_settings.clear.b = 0x80;
 
-		auto app = std::make_unique<MyApp>(settings, graphSettings);
+		appbase::sound::SoundSettings sound_settings;
+
+		auto app = std::make_unique<MyApp>(settings,
+			graph_settings, sound_settings);
 		app->Load();
 		app->Run();
 	}
-	catch (appbase::error::AppBaseError &error) {
+	catch (std::exception &error) {
 		SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION,
 			"%s", error.what());
-		return 1;
+		return EXIT_FAILURE;
+	}
+	catch (...) {
+		// If main is replaced with SDL_main, SDL_main is C linkage.
+		SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION,
+			"Caught unknown exception");
+		return EXIT_FAILURE;
 	}
 	return 0;
 }
