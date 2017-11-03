@@ -8,6 +8,7 @@ private:
 	appbase::SdlTexturePtr m_tex;
 	appbase::graph::CharTextureMap m_fonttex;
 	appbase::SdlChunkSharedPtr m_se;
+	appbase::SdlMusicSharedPtr m_bgm;
 public:
 	// inheriting constructor
 	using Application::Application;
@@ -28,7 +29,10 @@ public:
 				{ 0x30A0, 0x30FF },
 			});
 
-		m_se = Sound().LoadSe(FromBasePath("res/se/tm2_hit005.wav"));
+		m_se = Sound().LoadSe(FromBasePath("res/sound/tm2_hit005.wav"));
+		m_bgm = Sound().LoadBgm(FromBasePath("res/sound/tm2_footstep003.ogg"));
+
+		Sound().PlayBgm(m_bgm);
 	}
 
 	void Update() override
