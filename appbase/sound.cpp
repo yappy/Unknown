@@ -58,13 +58,13 @@ void SoundManager::ProcessFrame()
 {
 	// se
 	for (int i = 0; i < m_settings.mixing_channels; i++) {
-		if (!::Mix_Playing(i)) {
+		if (m_playing_chunks[i] != nullptr && !::Mix_Playing(i)) {
 			// set nullptr and decrement refcount
 			m_playing_chunks[i].reset();
 		}
 	}
 	// bgm
-	if (!::Mix_PlayingMusic()) {
+	if (m_playing_bgm != nullptr && !::Mix_PlayingMusic()) {
 		// set nullptr and decrement refcount
 		m_playing_bgm.reset();
 	}
