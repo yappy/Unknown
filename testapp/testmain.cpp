@@ -7,22 +7,28 @@ class MyApp : public appbase::Application {
 private:
 	appbase::SdlTexturePtr m_tex;
 	appbase::graph::CharTextureMap m_fonttex;
+	appbase::SdlChunkSharedPtr m_se;
 public:
 	// inheriting constructor
 	using Application::Application;
 
 	void Load()
 	{
+		using appbase::file::FromBasePath;
+
 		m_tex = Graph().LoadTexture(
-			appbase::file::FromBasePath("res/sample_8_index.png"));
+			FromBasePath("res/sample_8_index.png"));
 		auto font = Graph().LoadFont(
-			appbase::file::FromBasePath("res/ipaexg00301/ipaexg.ttf"), 32);
-		// 'ho'
+			FromBasePath("res/ipaexg00301/ipaexg.ttf"), 32);
 		m_fonttex = Graph().CreateFontTextureMap(font,
 			{
 				// hiragana
-				{ 0x3040, 0x309F }
+				{ 0x3040, 0x309F },
+				// katakana
+				{ 0x30A0, 0x30FF },
 			});
+
+		m_se = Sound().LoadSe(FromBasePath("res/se/tm2_hit005.wav"));
 	}
 
 	void Update() override
@@ -40,11 +46,19 @@ public:
 				SDL_Log("Mouse: %d (%d, %d)", i, mouse.x, mouse.y);
 			}
 		}
+
+		if (keys[SDL_SCANCODE_Z]) {
+			bool ok = Sound().PlaySe(m_se);
+			if (!ok) {
+				SDL_Log("Sound effect mixer full");
+			}
+		}
 	}
 	void Render() override
 	{
 		Graph().DrawTexture(m_tex, 0, 0);
 		Graph().DrawStringUtf8(m_fonttex, u8"ほわいと", 0, 100);
+		Graph().DrawStringUtf8(m_fonttex, u8"ぜっときーでこうかおん", 0, 200);
 	}
 };
 

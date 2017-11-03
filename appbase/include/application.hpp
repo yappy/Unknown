@@ -41,6 +41,10 @@ public:
 	{
 		return *m_graph;
 	}
+	sound::SoundManager &Sound()
+	{
+		return *m_sound;
+	}
 	input::InputManager &Input()
 	{
 		return *m_input;
