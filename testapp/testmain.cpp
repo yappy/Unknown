@@ -3,6 +3,16 @@
 #include <string>
 #include <vector>
 
+namespace {
+	using namespace appbase::file;
+	ConfigFile g_config({
+		{ "system.run",		true							},
+		{ "graph.clear.r",	{ 0x00, IntRangeCheck(0, 255) }	},
+		{ "graph.clear.g",	{ 0x00, IntRangeCheck(0, 255) }	},
+		{ "graph.clear.b",	{ 0x80, IntRangeCheck(0, 255) }	},
+	});
+}
+
 class MyApp : public appbase::Application {
 private:
 	appbase::SdlTexturePtr m_tex;
@@ -83,30 +93,25 @@ int main(int argc, char *argv[])
 				SDL_Log(line.c_str());
 			}
 		}
-		{
-			using namespace appbase::file;
-			ConfigFile config({
-				{"system.run", true},
-				{"system.title", "Test App"},
-				{"graph.clear.r", 0},
-				{"graph.clear.g", 0},
-				{"graph.clear.b", 0},
-			});
-			config.Load(FromBasePath("config.txt"));
-		}
+
+		g_config.Load(FromBasePath("config.txt"));
 
 		appbase::ApplicationSettings settings;
 		settings.title = "Test App";
 
 		appbase::graph::GraphicsSettings graph_settings;
-		graph_settings.clear.b = 0x80;
+		graph_settings.clear.r = g_config.GetInt("graph.clear.r");
+		graph_settings.clear.g = g_config.GetInt("graph.clear.g");
+		graph_settings.clear.b = g_config.GetInt("graph.clear.b");
 
 		appbase::sound::SoundSettings sound_settings;
 
 		auto app = std::make_unique<MyApp>(settings,
 			graph_settings, sound_settings);
 		app->Load();
-		app->Run();
+		if (g_config.GetBool("system.run")) {
+			app->Run();
+		}
 	}
 	catch (std::exception &error) {
 		SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION,

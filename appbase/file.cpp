@@ -136,6 +136,72 @@ void WriteAllBytes(const FilePointer &fp, const void *buf, size_t size)
 	}
 }
 
+std::string ConfigFile::GetString(const std::string &key)
+{
+	const auto &v = m_data.at(key);
+	if (v.type != ConfigElement::Type::String) {
+		throw std::logic_error(key + " is not string");
+	}
+	return v.string_value;
+}
+
+bool ConfigFile::GetBool(const std::string &key)
+{
+	const auto &v = m_data.at(key);
+	if (v.type != ConfigElement::Type::Bool) {
+		throw std::logic_error(key + " is not bool");
+	}
+	return v.bool_value;
+}
+
+int ConfigFile::GetInt(const std::string &key)
+{
+	const auto &v = m_data.at(key);
+	if (v.type != ConfigElement::Type::Int) {
+		throw std::logic_error(key + " is not int");
+	}
+	return v.int_value;
+}
+
+void ConfigFile::SetString(const std::string &key, const std::string &value)
+{
+	auto &v = m_data.at(key);
+	if (v.type != ConfigElement::Type::String) {
+		throw std::logic_error(key + " is not string");
+	}
+	if (v.string_check != nullptr) {
+		if (!v.string_check(value)) {
+			SDL_Log("Illegal value: %s", value.c_str());
+			return;
+		}
+	}
+	v.string_value = value;
+}
+
+void ConfigFile::SetBool(const std::string &key, bool value)
+{
+	auto &v = m_data.at(key);
+	if (v.type != ConfigElement::Type::Bool) {
+		throw std::logic_error(key + " is not bool");
+	}
+	v.bool_value = value;
+}
+
+void ConfigFile::SetInt(const std::string &key, int value)
+{
+	auto &v = m_data.at(key);
+	if (v.type != ConfigElement::Type::Int) {
+		throw std::logic_error(key + " is not int");
+	}
+	if (v.int_check != nullptr) {
+		if (!v.int_check(value)) {
+			SDL_Log("Illegal value: %d", value);
+			return;
+		}
+	}
+	v.int_value = value;
+}
+
 void ConfigFile::Load(const std::string &filepath)
 {
 	SDL_Log("Load config file: %s", filepath.c_str());
@@ -160,14 +226,14 @@ void ConfigFile::Load(const std::string &filepath)
 				if (it != m_data.end()) {
 					switch (it->second.type) {
 					case ConfigElement::Type::String:
-						it->second.stringValue = value;
+						SetString(key, value);
 						break;
 					case ConfigElement::Type::Bool:
 						if (value == "true") {
-							it->second.boolValue = true;
+							SetBool(key, true);
 						}
 						else if (value == "false") {
-							it->second.boolValue = false;
+							SetBool(key, false);
 						}
 						else {
 							SDL_Log("Illegal key: %s (%d)", key.c_str(), lineNo);
@@ -175,7 +241,7 @@ void ConfigFile::Load(const std::string &filepath)
 						break;
 					case ConfigElement::Type::Int:
 						try {
-							it->second.intValue = std::stoi(value);
+							SetInt(key, std::stoi(value));
 						}
 						catch (...) {
 							SDL_Log("Illegal int value: %s (%d)", value.c_str(), lineNo);
@@ -219,13 +285,13 @@ void ConfigFile::Save(const std::string &filepath)
 		line += '=';
 		switch (kv.second.type) {
 		case ConfigElement::Type::String:
-			line += kv.second.stringValue;
+			line += kv.second.string_value;
 			break;
 		case ConfigElement::Type::Bool:
-			line += kv.second.boolValue ? "true" : "false";
+			line += kv.second.bool_value ? "true" : "false";
 			break;
 		case ConfigElement::Type::Int:
-			line += std::to_string(kv.second.intValue);
+			line += std::to_string(kv.second.int_value);
 			break;
 		default:
 			SDL_assert(0);
